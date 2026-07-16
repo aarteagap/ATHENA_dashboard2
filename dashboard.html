@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@400;500;600;700&display=swap');
+:root{--hull:#0E2A3D;--hull2:#163B54;--sky:#2E8FB0;--cargo:#E8A33D;--road:#7A6FD0;--paper:#F6F4EF;--card:#FFF;--line:#E2DED3;--ok:#2E8B57;--ok-bg:#E5F3EA;--warn:#C77D1E;--warn-bg:#FCEFDC;--bad:#C0392B;--bad-bg:#FBE5E1;--mu:#6B7280;--mu2:#9CA3AF;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--paper);font-family:'Inter',sans-serif;color:var(--hull);font-size:13px;}
+::-webkit-scrollbar{height:6px;width:6px;}::-webkit-scrollbar-thumb{background:#D5D0C2;border-radius:4px;}
+.topbar{background:var(--hull);color:#fff;padding:14px 20px 0;}
+.ti{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding-bottom:4px;}
+.brand{display:flex;align-items:center;gap:10px;}
+.bm{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--sky),var(--cargo));display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:var(--hull);}
+.brand h1{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;}
+.brand p{font-size:10px;color:#9FC2D4;font-family:'JetBrains Mono',monospace;margin-top:1px;}
+.tabs{display:flex;gap:1px;overflow-x:auto;margin-top:10px;}
+.tb{background:transparent;border:none;cursor:pointer;color:#A8C4D2;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:12px;padding:9px 14px;border-radius:6px 6px 0 0;white-space:nowrap;display:flex;align-items:center;gap:6px;transition:all .15s;}
+.tb .ix{font-family:'JetBrains Mono',monospace;font-size:9px;opacity:.6;}
+.tb:hover{color:#fff;background:rgba(255,255,255,.06);}
+.tb.active{color:#fff;background:var(--paper);}
+.tb.active .ix{color:var(--sky);}
+main{padding:20px 20px 40px;}
+.panel{display:none;}.panel.active{display:block;animation:fi .25s ease;}
+@keyframes fi{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+.ph{margin-bottom:16px;}
+.ey{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--sky);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.pt{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;}
+.ps{font-size:11.5px;color:var(--mu);margin-top:3px;}
+.kg{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;margin-bottom:16px;}
+.kc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;position:relative;overflow:hidden;}
+.kc::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--acc,var(--sky));}
+.kl{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--mu);font-weight:600;}
+.kv{font-family:'Space Grotesk',sans-serif;font-size:26px;font-weight:700;margin-top:4px;line-height:1;}
+.kv .u{font-size:12px;color:var(--mu2);font-weight:500;margin-left:2px;}
+.kf{font-size:10px;color:var(--mu);margin-top:6px;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin-bottom:14px;}
+.ct{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;color:var(--hull);display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;}
+.ct .sub{font-size:10px;color:var(--mu);font-family:'JetBrains Mono',monospace;font-weight:400;}
+.bars{display:flex;flex-direction:column;gap:8px;}
+.br{display:grid;align-items:center;gap:8px;font-size:11px;}
+.lbl{color:#1C2940;font-weight:500;text-align:right;}
+.bt{background:#EFEBE0;border-radius:5px;height:14px;overflow:hidden;}
+.bf{height:100%;border-radius:5px;}
+.bv{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:11px;}
+.pill{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;}
+.pill.ok{background:var(--ok-bg);color:var(--ok);}
+.pill.warn{background:var(--warn-bg);color:var(--warn);}
+.pill.bad{background:var(--bad-bg);color:var(--bad);}
+.pill.neu{background:#EFEBE0;color:var(--mu);}
+.tbl-scroll{max-height:460px;overflow-y:auto;border-radius:8px;border:1px solid var(--line);}
+table.dt{width:100%;border-collapse:collapse;font-size:11px;}
+table.dt th{text-align:left;padding:7px 9px;font-size:9.5px;text-transform:uppercase;color:var(--mu);border-bottom:2px solid var(--line);font-weight:600;white-space:nowrap;background:#fff;position:sticky;top:0;z-index:2;}
+table.dt td{padding:6px 9px;border-bottom:1px solid var(--line);white-space:nowrap;color:#1C2940;}
+table.dt tr:hover td{background:#FBFAF6;}
+table.dt td.num{font-family:'JetBrains Mono',monospace;text-align:right;font-weight:500;}
+table.dt td.mono{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mu);}
+.tbl-wrap{overflow-x:auto;}
+table.std{width:100%;border-collapse:collapse;font-size:11.5px;}
+table.std th{text-align:left;padding:7px 10px;font-size:10px;text-transform:uppercase;color:var(--mu);border-bottom:2px solid var(--line);font-weight:600;white-space:nowrap;background:#fff;}
+table.std td{padding:7px 10px;border-bottom:1px solid var(--line);white-space:nowrap;color:#1C2940;}
+table.std td.num{font-family:'JetBrains Mono',monospace;text-align:right;font-weight:500;}
+.btn-popup{background:var(--hull);color:#fff;border:none;border-radius:6px;padding:3px 7px;font-size:9.5px;font-weight:600;cursor:pointer;}
+.btn-popup:hover{background:var(--sky);}
+.btn-popup.active{background:var(--sky);box-shadow:0 0 0 2px rgba(46,143,176,.3);}
+.dd-wrap{position:relative;display:inline-block;}
+.dd-btn{background:#fff;border:1px solid var(--line);border-radius:6px;padding:6px 10px;font-size:11px;font-family:inherit;cursor:pointer;min-width:120px;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:8px;}
+.dd-btn:hover{border-color:var(--sky);}
+.dd-panel{position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.12);padding:8px;z-index:80;max-height:230px;overflow:auto;display:none;min-width:170px;}
+.dd-panel.open{display:block;}
+.dd-item{display:flex;align-items:center;gap:6px;font-size:11px;padding:3px 4px;white-space:nowrap;cursor:pointer;}
+.dd-item input{cursor:pointer;}
+.dd-actions{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:4px;padding-bottom:4px;}
+.pmi-kpi-zone{display:flex;gap:28px;flex-wrap:wrap;margin-top:16px;padding-top:16px;border-top:1px solid var(--line);align-items:flex-start;}
+.pmi-kpi-col{display:flex;flex-direction:column;gap:8px;}
+.pmi-kpi-h{font-size:10px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.04em;}
+.pmi-kpi-h-sub{font-weight:500;text-transform:none;letter-spacing:0;color:var(--mu2);}
+.pmi-mode-tbl{display:flex;flex-direction:column;gap:6px;}
+.pmi-mode-row{display:flex;align-items:center;justify-content:space-between;background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:7px 12px;border-left:4px solid var(--mc);}
+.pmi-mode-lbl{display:flex;align-items:center;gap:7px;font-weight:700;font-size:12px;color:var(--hull);}
+.pmi-mode-ic{font-size:13px;}
+.pmi-mode-val{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:14px;color:var(--hull);display:flex;align-items:baseline;gap:5px;}
+.pmi-mode-sub{font-weight:500;font-size:10px;color:var(--mu);}
+.pmi-basc-list{display:flex;flex-direction:column;gap:5px;}
+.pmi-basc-row{display:grid;grid-template-columns:120px 1fr 46px;align-items:center;gap:8px;font-size:11px;}
+.pmi-basc-lbl{color:var(--hull);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.pmi-basc-bar-wrap{background:#EFEBE0;border-radius:5px;height:12px;overflow:hidden;}
+.pmi-basc-bar{height:100%;background:linear-gradient(90deg,var(--sky),var(--hull2));border-radius:5px;}
+.pmi-basc-val{text-align:right;font-family:'JetBrains Mono',monospace;font-weight:600;color:var(--hull);}
+.pmi-ring-card{display:flex;align-items:center;gap:10px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:10px 14px;flex:1;}
+.pmi-ring-t{font-size:10px;color:var(--mu);font-weight:600;text-transform:uppercase;letter-spacing:.03em;}
+.pmi-ring-v{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;color:var(--hull);}
+.pmi-ring-u{font-weight:500;font-size:10.5px;color:var(--mu2);}
+.pmi-ring-p{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:12px;}
+.modal-overlay{position:fixed;inset:0;background:rgba(14,42,61,.6);z-index:100;display:none;align-items:center;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--card);border-radius:16px;width:360px;max-width:92%;box-shadow:0 20px 60px rgba(0,0,0,.35);overflow:hidden;}
+.modal-head{background:var(--hull);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;}
+.modal-head h3{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;color:#fff;}
+.modal-head p{font-size:10px;color:#9FC2D4;font-family:'JetBrains Mono',monospace;margin-top:2px;}
+.modal-close{background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;}
+.modal-body{padding:18px 20px;display:flex;flex-direction:column;gap:11px;}
+.modal-row{display:flex;align-items:flex-start;gap:10px;}
+.modal-icon{width:30px;height:30px;border-radius:7px;background:#F0F7FB;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+.modal-info .ml{font-size:9.5px;color:var(--mu);text-transform:uppercase;font-weight:600;}
+.modal-info .mv{font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:13px;color:var(--hull);margin-top:1px;}
+.modal-info .mv.mono{font-family:'JetBrains Mono',monospace;}
+.modal-div{height:1px;background:var(--line);}
+.tt{position:absolute;background:var(--hull);color:#fff;border-radius:10px;padding:10px 14px;font-size:11px;pointer-events:none;opacity:0;transition:opacity .15s;z-index:10;box-shadow:0 4px 16px rgba(0,0,0,.3);min-width:195px;}
+.sec-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:15px;color:var(--hull);margin:20px 0 12px;padding-bottom:8px;border-bottom:2px solid var(--line);}
+.hero-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:16px;}
+.hc{border-radius:14px;padding:20px 18px;color:#fff;position:relative;overflow:hidden;min-height:110px;display:flex;flex-direction:column;justify-content:space-between;}
+.hc .hl{font-size:10px;text-transform:uppercase;opacity:.85;font-weight:600;}
+.hc .hv{font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:700;margin-top:4px;}
+.hc .hs{font-size:10px;opacity:.8;margin-top:4px;}
+.sc-chart{display:flex;align-items:flex-end;gap:6px;height:150px;padding:6px 2px 0;}
+.sc-col{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;}
+.sc-bars{width:100%;max-width:28px;display:flex;flex-direction:column-reverse;border-radius:3px 3px 0 0;overflow:hidden;}
+.seg{width:100%;}
+.sc-lbl{font-size:9px;color:var(--mu);margin-top:5px;font-family:'JetBrains Mono',monospace;}
+.sc-val{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--hull);margin-bottom:2px;}
+.lrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;padding-top:8px;border-top:1px solid var(--line);}
+.li2{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--mu);}
+.ld2{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+.donut-wrap{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+.dl{display:flex;flex-direction:column;gap:7px;flex:1;min-width:130px;}
+.dli{display:flex;align-items:center;gap:7px;font-size:11px;}
+.dls{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+.dlv{margin-left:auto;font-family:'JetBrains Mono',monospace;font-weight:600;}
+.port-panel{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:14px;}
+.port-card{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fff;border-left:4px solid var(--pc,var(--sky));}
+.pcn{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.badge{font-size:9px;padding:2px 7px;border-radius:10px;font-weight:600;}
+.pcs{font-size:11px;color:var(--mu);margin-bottom:4px;display:flex;justify-content:space-between;}
+.pcs b{color:#1C2940;font-family:'JetBrains Mono',monospace;font-weight:600;}
+.pcm{height:5px;background:#EFEBE0;border-radius:3px;margin-top:8px;overflow:hidden;display:flex;}
+.pc-footer{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);}
+.pc-stat{flex:1;text-align:center;}
+.pc-stat-val{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:16px;}
+.pc-stat-lbl{font-size:9px;color:var(--mu);text-transform:uppercase;margin-top:1px;}
+/* Filter bar shared */
+.filter-bar{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start;margin-bottom:14px;padding:14px 16px;background:#F0F7FB;border:1px solid #C8DDE8;border-radius:10px;}
+.fg{display:flex;flex-direction:column;gap:4px;}
+.fg label{font-size:10px;font-weight:700;color:var(--hull2);text-transform:uppercase;letter-spacing:.5px;}
+.fg select{border:1px solid var(--line);border-radius:7px;padding:5px 10px;font-size:11.5px;color:var(--hull);background:#fff;cursor:pointer;min-width:100px;}
+.fg select:focus{outline:none;border-color:var(--sky);}
+.filter-tag{background:var(--hull2);color:#fff;border-radius:6px;padding:5px 10px;font-size:10px;font-weight:700;font-family:'JetBrains Mono',monospace;align-self:flex-end;}
+/* Weekly Pivot */
+.pivot-wrap{overflow-x:auto;}
+.pivot-scroll{max-height:560px;overflow-y:auto;}
+table.pivot{border-collapse:collapse;width:100%;font-size:11px;min-width:600px;}
+table.pivot thead th{position:sticky;top:0;z-index:5;}
+table.pivot th{background:var(--hull);color:#fff;padding:8px 10px;font-size:10px;font-weight:600;text-transform:uppercase;white-space:nowrap;text-align:left;border-right:1px solid rgba(255,255,255,.08);}
+table.pivot th.dh{text-align:center;min-width:72px;}
+table.pivot th.tot-h{text-align:right;background:#0A1E2D;min-width:64px;}
+table.pivot td{padding:6px 10px;border-bottom:1px solid var(--line);white-space:nowrap;vertical-align:middle;border-right:1px solid #F0EDE4;}
+table.pivot td.fv{font-family:'JetBrains Mono',monospace;text-align:center;font-weight:600;color:var(--hull2);}
+table.pivot td.fz{text-align:center;color:var(--mu2);}
+table.pivot td.tot-v{font-family:'JetBrains Mono',monospace;text-align:right;font-weight:700;color:var(--hull);border-left:2px solid var(--line);}
+table.pivot tr.pk-total td{background:#E2EFF5;font-weight:700;color:var(--hull);}
+table.pivot tr.pk-total td.fv{color:var(--hull2);font-family:'JetBrains Mono',monospace;}
+table.pivot tr.pk-total td.tot-v{color:var(--hull);font-weight:700;}
+table.pivot tr.grand-total td{background:var(--hull);color:#fff;font-weight:700;}
+table.pivot tr.grand-total td.fv{color:#E8A33D;font-family:'JetBrains Mono',monospace;}
+table.pivot tr.grand-total td.tot-v{color:#E8A33D;font-weight:700;border-left:2px solid rgba(255,255,255,.2);}
+table.pivot tr:hover td{background:#F5F9FB;}
+table.pivot tr.pk-total:hover td,table.pivot tr.grand-total:hover td{background:unset;}
+.mode-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:10px;font-size:9.5px;font-weight:700;}
+.mA{background:#EBF4F8;color:#2E8FB0;}.mM{background:#E8EDF3;color:#163B54;}.mT{background:#EEE9FC;color:#7A6FD0;}
+/* SENASA pivot */
+table.senasa{border-collapse:collapse;width:100%;font-size:11px;min-width:700px;}
+table.senasa thead th{position:sticky;top:0;z-index:5;background:var(--hull);color:#fff;padding:8px 10px;font-size:10px;font-weight:600;text-transform:uppercase;white-space:nowrap;border-right:1px solid rgba(255,255,255,.1);}
+table.senasa th.time-h{text-align:center;min-width:72px;background:#163B54;}
+table.senasa th.tot-h{text-align:right;background:#0A1E2D;}
+table.senasa td{padding:6px 10px;border-bottom:1px solid var(--line);white-space:nowrap;vertical-align:middle;border-right:1px solid #F0EDE4;}
+table.senasa td.tv{font-family:'JetBrains Mono',monospace;text-align:center;font-weight:700;color:#163B54;}
+table.senasa td.tz{text-align:center;color:var(--mu2);}
+table.senasa td.tot-v{font-family:'JetBrains Mono',monospace;text-align:right;font-weight:700;border-left:2px solid var(--line);}
+table.senasa tr.date-total td{background:#E2EFF5;font-weight:700;color:var(--hull);}
+table.senasa tr.date-total td.tv{font-family:'JetBrains Mono',monospace;color:var(--hull2);}
+table.senasa tr.grand-total td{background:var(--hull);color:#fff;font-weight:700;}
+table.senasa tr.grand-total td.tv{color:#E8A33D;font-family:'JetBrains Mono',monospace;}
+table.senasa tr.grand-total td.tot-v{color:#E8A33D;}
+table.senasa tr:hover td{background:#F5F9FB;}
+table.senasa tr.date-total:hover td,table.senasa tr.grand-total:hover td{background:unset;}
+.att-pa{display:inline-block;padding:1px 7px;border-radius:10px;font-size:9.5px;font-weight:700;background:#EBF4F8;color:#2E8FB0;}
+.att-sn{display:inline-block;padding:1px 7px;border-radius:10px;font-size:9.5px;font-weight:700;background:#E5F3EA;color:#2E8B57;}
+.addon{display:inline-flex;align-items:center;gap:2px;font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;margin-left:4px;}
+.aup{background:#E5F3EA;color:#2E8B57;}.adn{background:#FBE5E1;color:#C0392B;}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="ti">
+    <div class="brand"><div class="bm">A</div><div><h1>ATHENA Control Tower</h1><p>HORIZON_FORECAST_2627 · Exportación Multimodal</p></div></div>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#BFD9E5;display:flex;align-items:center;gap:5px;"><span style="width:5px;height:5px;border-radius:50%;background:#2E8B57;box-shadow:0 0 5px #2E8B57;display:inline-block;"></span>483 registros · S20–S32</span>
+  </div>
+  <div class="tabs" id="tabBar"></div>
+</div>
+<div class="modal-overlay" id="drModal">
+  <div class="modal-box">
+    <div class="modal-head"><div><h3>Información del conductor</h3><p id="modal-sub">—</p></div><button class="modal-close" onclick="closeM()">✕</button></div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+<main id="main"></main>
+<div class="tt" id="tt"></div>
+<script>
+// ── SENASA DATA (151 confirmed rows with inspector) ───────────
+
+// Weekly rows (all confirmed modes)
+
+
+
+// ── TABS ─────────────────────────────────────────────────────
+const TABS=[
+  {id:'forecast',ix:'01',label:'Forecast'},
+  {id:'ports',   ix:'02',label:'Ports'},
+  {id:'weekly',  ix:'03',label:'Weekly'},
+  {id:'pmi',     ix:'04',label:'PMI'},
+  {id:'air',     ix:'05',label:'Air Program'},
+  {id:'execute', ix:'06',label:'Execute'},
+  {id:'kpi',     ix:'07',label:'KPI Tracker'},
+  {id:'rutas',   ix:'08',label:'Destinos & Rutas'},
+];
+const tabBar=document.getElementById('tabBar');
+TABS.forEach((t,i)=>{
+  const b=document.createElement('button');
+  b.className='tb'+(i===0?' active':'');
+  b.dataset.tab=t.id;
+  b.innerHTML=`<span class="ix">${t.ix}</span>${t.label}`;
+  b.onclick=()=>sw(t.id);
+  tabBar.appendChild(b);
+});
+function sw(id){
+  document.querySelectorAll('.tb').forEach(b=>b.classList.toggle('active',b.dataset.tab===id));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id==='p-'+id));
+}
+
+let SENASA,WROWS,AIR,AIRLINES,FWKS,WKL,KPI,EX,DEST,LINEAS,PMI_PORTS,FWKS_MODE,EMBARQUES,TR_PROGRAM,PORTS_RAW;
+async function loadDataAndInit(){
+  const res = await fetch('data.json', {cache:'no-store'});
+  const d = await res.json();
+  ({SENASA,WROWS,AIR,AIRLINES,FWKS,WKL,KPI,EX,DEST,LINEAS,PMI_PORTS,FWKS_MODE,EMBARQUES,TR_PROGRAM,PORTS_RAW} = d);
+  initDashboard();
+}
+loadDataAndInit();
+
+function initDashboard(){
+const main=document.getElementById('main'),ttEl=document.getElementById('tt');
+const f1=n=>(+n||0).toLocaleString('es-PE',{minimumFractionDigits:1,maximumFractionDigits:1});
+const fp=n=>f1(n)+'%';
+function ddToggle(panelId){
+  const p=document.getElementById(panelId);
+  const isOpen=p.classList.contains('open');
+  document.querySelectorAll('.dd-panel').forEach(x=>x.classList.remove('open'));
+  if(!isOpen)p.classList.add('open');
+}
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.dd-wrap'))document.querySelectorAll('.dd-panel').forEach(p=>p.classList.remove('open'));
+});
+function ddSetAll(panelId,state){
+  document.querySelectorAll('#'+panelId+' input[type=checkbox]').forEach(cb=>cb.checked=state);
+}
+function ddChecked(panelId){
+  return Array.from(document.querySelectorAll('#'+panelId+' input[type=checkbox]:checked')).map(cb=>cb.value);
+}
+function ddLabel(panelId,btnId,allLabel){
+  const boxes=document.querySelectorAll('#'+panelId+' input[type=checkbox]');
+  const checked=document.querySelectorAll('#'+panelId+' input[type=checkbox]:checked').length;
+  document.getElementById(btnId).querySelector('span').textContent=checked===boxes.length?allLabel:(checked===0?'Ninguno':checked+' sel.');
+}
+const sem=p=>p>=95?'ok':p>=80?'warn':'bad';
+function fmtDate(d){
+  if(!d)return'Sin fecha';
+  const dt=new Date(d+'T12:00:00');
+  const D=['dom','lun','mar','mié','jue','vie','sáb'],M=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  return`${D[dt.getDay()]},${dt.getDate()}-${M[dt.getMonth()]}./${String(dt.getFullYear()).slice(2)}`;
+}
+function closeM(){document.getElementById('drModal').classList.remove('open');}
+document.getElementById('drModal').addEventListener('click',e=>{if(e.target===e.currentTarget)closeM();});
+window.openM=function(r){
+  document.getElementById('modal-sub').textContent=`${r.awb||r.instruction}·${r.wk}·${r.dest}`;
+  document.getElementById('modal-body').innerHTML=`<div class="modal-row"><div class="modal-icon">👤</div><div class="modal-info"><div class="ml">Conductor</div><div class="mv">${r.driver||'—'}</div></div></div><div class="modal-div"></div><div class="modal-row"><div class="modal-icon">🪪</div><div class="modal-info"><div class="ml">Licencia</div><div class="mv mono">${r.license||'—'}</div></div></div><div class="modal-row"><div class="modal-icon">🚛</div><div class="modal-info"><div class="ml">Tracto</div><div class="mv mono">${r.tractor||'—'}</div></div></div><div class="modal-row"><div class="modal-icon">🚜</div><div class="modal-info"><div class="ml">Remolque</div><div class="mv mono">${r.trailer||'—'}</div></div></div><div class="modal-div"></div><div class="modal-row"><div class="modal-icon">📱</div><div class="modal-info"><div class="ml">Celular</div><div class="mv">${r.phone||'—'}</div></div></div>`;
+  document.getElementById('drModal').classList.add('open');
+};
+
+// ── CHART ────────────────────────────────────────────────────
+function buildChart(wks,sid,metric){
+  metric=metric||'fcl';
+  const kC=metric==='fcl'?'fcl_conf':'pal_conf',kP=metric==='fcl'?'fcl_proj':'pal_proj',kA=metric==='fcl'?'fcl_addon':'pal_addon';
+  const W=900,H=320,pL=40,pB=32,pT=16;
+  const mxV=Math.max(...wks.map(w=>Math.max(w[kC],w[kP]+w[kA])),1);
+  const xOf=i=>pL+i*(W-pL-16)/(wks.length-1);
+  const yOf=v=>H-pB-(v/mxV)*(H-pT-pB);
+  const pC=wks.map((w,i)=>w[kC]>0?{x:xOf(i),y:yOf(w[kC]),w,i}:null).filter(Boolean);
+  const pP=wks.map((w,i)=>({x:xOf(i),y:yOf(w[kP]),w,i}));
+  const mkP=pts=>pts.map((p,i)=>(i===0?'M':'L')+p.x.toFixed(0)+','+p.y.toFixed(0)).join(' ');
+  const grid=[0,.25,.5,.75,1].map(f=>{const y=pT+(1-f)*(H-pT-pB);return`<line x1="${pL}" y1="${y.toFixed(0)}" x2="${W-4}" y2="${y.toFixed(0)}" stroke="#EFEBE0" stroke-width="1"/><text x="${pL-5}" y="${(y+4).toFixed(0)}" text-anchor="end" font-size="9" fill="#9CA3AF" font-family="JetBrains Mono">${(mxV*f).toFixed(0)}</text>`;}).join('');
+  const xlbls=wks.map((w,i)=>`<text x="${xOf(i).toFixed(0)}" y="${H-8}" text-anchor="middle" font-size="9" fill="${w[kC]>0?'#1C2940':'#9CA3AF'}" font-family="JetBrains Mono">${w.label}</text>`).join('');
+  const addons=wks.map((w,i)=>{
+    if(w[kA]<=0)return'';
+    const x=xOf(i),yB=yOf(w[kP]+w[kA]);
+    const up=(w[kP]+w[kA])>=w[kC];
+    const col=up?'#2E8B57':'#C0392B',bg=up?'#E5F3EA':'#FBE5E1',sym=up?'▲':'▼';
+    return`<rect x="${(x-18).toFixed(0)}" y="${(yB-20).toFixed(0)}" width="36" height="14" rx="3" fill="${bg}"/><text x="${x.toFixed(0)}" y="${(yB-9).toFixed(0)}" text-anchor="middle" font-size="8.5" fill="${col}" font-family="JetBrains Mono" font-weight="700">${sym}${f1(w[kA])}</text>`;
+  }).join('');
+  const dC=pC.map(p=>`<circle class="dlc" data-i="${p.i}" data-t="c" cx="${p.x.toFixed(0)}" cy="${p.y.toFixed(0)}" r="5" fill="#2E8FB0" stroke="#fff" stroke-width="2" style="cursor:pointer;"/>`).join('');
+  const dP=pP.map(p=>`<circle class="dlc" data-i="${p.i}" data-t="p" cx="${p.x.toFixed(0)}" cy="${p.y.toFixed(0)}" r="4" fill="#E8A33D" stroke="#fff" stroke-width="1.5" style="cursor:pointer;"/>`).join('');
+  const aC=pC.length>1?`<path d="${mkP(pC)} L${pC.at(-1).x},${H-pB} L${pC[0].x},${H-pB} Z" fill="#2E8FB0" opacity=".08"/>`:'';
+  const aP=pP.length>1?`<path d="${mkP(pP)} L${pP.at(-1).x},${H-pB} L${pP[0].x},${H-pB} Z" fill="#E8A33D" opacity=".07"/>`:'';
+  return`<svg id="${sid}" viewBox="0 0 ${W} ${H}" style="width:100%;height:${H+8}px;display:block;" preserveAspectRatio="none" data-metric="${metric}">${grid}${aP}${aC}${pP.length>1?`<path d="${mkP(pP)}" fill="none" stroke="#E8A33D" stroke-width="2" stroke-dasharray="6 3"/>`:''} ${pC.length>1?`<path d="${mkP(pC)}" fill="none" stroke="#2E8FB0" stroke-width="2.5"/>`:''} ${addons}${dP}${dC}${xlbls}</svg>`;
+}
+function attachChart(sid,wks,metric){
+  metric=metric||'fcl';
+  const kC=metric==='fcl'?'fcl_conf':'pal_conf',kP=metric==='fcl'?'fcl_proj':'pal_proj',kA=metric==='fcl'?'fcl_addon':'pal_addon';
+  const unitLbl=metric==='fcl'?'FCL':'Pallets';
+  const el=document.getElementById(sid);if(!el)return;
+  el.querySelectorAll('circle.dlc').forEach(dot=>{
+    dot.addEventListener('mouseenter',()=>{
+      const i=+dot.dataset.i,w=wks[i];
+      const up=(w[kP]+w[kA])>=w[kC];const ac=up?'#2E8B57':'#C0392B';
+      ttEl.innerHTML=`<div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;margin-bottom:7px;padding-bottom:5px;border-bottom:1px solid rgba(255,255,255,.15);">${w.label}</div>
+        <div style="display:flex;gap:7px;margin-bottom:4px;"><span style="width:8px;height:8px;border-radius:50%;background:#2E8FB0;flex-shrink:0;margin-top:2px;"></span><span style="flex:1;opacity:.85;">Confirmado</span><b style="font-family:'JetBrains Mono',monospace;">${f1(w[kC])} ${unitLbl}</b></div>
+        <div style="display:flex;gap:7px;margin-bottom:4px;"><span style="width:8px;height:8px;border-radius:50%;background:#E8A33D;flex-shrink:0;margin-top:2px;"></span><span style="flex:1;opacity:.85;">Proy. SOP+PRE</span><b style="font-family:'JetBrains Mono',monospace;">${f1(w[kP])} ${unitLbl}</b></div>
+        ${w[kA]>0?`<div style="display:flex;gap:7px;margin-bottom:4px;"><span style="width:8px;height:8px;border-radius:3px;background:${ac};flex-shrink:0;margin-top:2px;"></span><span style="flex:1;opacity:.85;">ADD+EXPO</span><b style="font-family:'JetBrains Mono',monospace;color:${ac};">${up?'▲':'▼'}${f1(w[kA])}</b></div>`:''}
+        <div style="border-top:1px solid rgba(255,255,255,.15);margin-top:6px;padding-top:5px;display:flex;justify-content:space-between;"><span style="opacity:.8">% Ejec.</span><b style="font-family:'JetBrains Mono',monospace;">${w[kP]>0?fp(w[kC]/w[kP]*100):'—'}</b></div>`;
+      ttEl.style.opacity='1';
+      const rect=el.getBoundingClientRect();
+      const cx=+dot.getAttribute('cx')*(rect.width/900),cy=+dot.getAttribute('cy')*(rect.height/328);
+      let left=cx+12,top=cy+18;if(left+200>rect.width)left=cx-205;
+      ttEl.style.left=(rect.left+left+window.scrollX)+'px';ttEl.style.top=(rect.top+top+window.scrollY)+'px';
+    });
+    dot.addEventListener('mouseleave',()=>{ttEl.style.opacity='0';});
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+// 01 FORECAST
+// ══════════════════════════════════════════════════════════════
+let fcMetric='fcl';
+function fcSetMetric(m){
+  fcMetric=m;
+  document.getElementById('fc-btn-fcl').classList.toggle('active',m==='fcl');
+  document.getElementById('fc-btn-pal').classList.toggle('active',m==='pallets');
+  renderForecast();
+}
+function bFcast(){
+  const allPPs=FWKS.map(w=>w.wk);
+  main.insertAdjacentHTML('beforeend',`<section class="panel active" id="p-forecast">
+    <div class="ph"><div class="ey">01 · Proyección vs ejecución</div><div class="pt">Forecast — Pack Plan S20→S32</div><div class="ps">Azul = Confirmado · Naranja punteada = SOP+PRE · badge ▲/▼ = ADD+EXPO · Hover para detalle.</div></div>
+    <div class="card" style="margin-bottom:14px;">
+      <div class="ct">Filtro global <span class="sub" id="fc-stat"></span></div>
+      <div class="filter-bar" style="align-items:flex-start;">
+        <div class="fg">
+          <label>Métrica</label>
+          <div style="display:flex;gap:6px;">
+            <button type="button" id="fc-btn-fcl" class="btn-popup active" style="font-size:11px;padding:5px 12px;font-weight:700;" onclick="fcSetMetric('fcl')">📦 FCL</button>
+            <button type="button" id="fc-btn-pal" class="btn-popup" style="font-size:11px;padding:5px 12px;font-weight:700;" onclick="fcSetMetric('pallets')">🧱 Pallets</button>
+          </div>
+        </div>
+        <div class="fg" style="width:100%;">
+          <label>Pack Plan</label>
+          <div style="display:flex;gap:4px;margin-bottom:6px;">
+            <button type="button" class="btn-popup" style="font-size:10px;padding:2px 8px;" onclick="fcSetAll(true)">Todos</button>
+            <button type="button" class="btn-popup" style="font-size:10px;padding:2px 8px;" onclick="fcSetAll(false)">Ninguno</button>
+          </div>
+          <div id="fc-pp-list" style="display:flex;flex-wrap:wrap;gap:6px 14px;max-width:900px;">${allPPs.map(pp=>`<label style="display:flex;align-items:center;gap:4px;font-size:11px;font-family:'JetBrains Mono',monospace;cursor:pointer;"><input type="checkbox" class="fc-pp-cb" value="${pp}" checked style="cursor:pointer;">S${pp}</label>`).join('')}</div>
+        </div>
+      </div>
+    </div>
+    <div id="fc-kg"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding:10px 14px;background:#F0F7FB;border:1px solid #C8DDE8;border-radius:10px;font-size:11px;"><b style="color:var(--sky);">Lógica 6W:</b><span><b>SOP/PRE</b> = proyección base (línea naranja)</span><span style="background:#E5F3EA;border-radius:4px;padding:1px 6px;color:#2E8B57;font-weight:700;font-size:10px;">▲ ADD/EXPO</span>proyección ≥ ejec.<span style="background:#FBE5E1;border-radius:4px;padding:1px 6px;color:#C0392B;font-weight:700;font-size:10px;">▼ ADD/EXPO</span>proyección &lt; ejec.</div>
+    <div class="card"><div class="ct">Curva global <span class="sub">hover para detalle</span></div><div id="fc-chart-wrap" style="position:relative;max-width:900px;margin:0 auto;"></div><div style="display:flex;gap:14px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);flex-wrap:wrap;"><div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mu);"><svg width="22" height="4"><line x1="0" y1="2" x2="22" y2="2" stroke="#2E8FB0" stroke-width="2.5"/></svg>Confirmado</div><div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mu);"><svg width="22" height="4"><line x1="0" y1="2" x2="22" y2="2" stroke="#E8A33D" stroke-width="2" stroke-dasharray="5 2"/></svg>SOP+PRE</div></div></div>
+    <div class="card"><div class="ct">Desviación Confirmado vs SOP+PRE</div><div class="tbl-wrap"><table class="std"><thead><tr><th>Semana</th><th style="text-align:right">SOP+PRE</th><th style="text-align:right">Total c/ADD+EXPO</th><th style="text-align:right">Confirmado</th><th style="text-align:right">Desviación</th><th>% Ejecución</th></tr></thead><tbody id="fc-dev-body"></tbody></table></div></div>
+    <div class="sec-title">📊 Proyección vs Ejecución por Modo</div>
+    <div class="g2">
+      <div class="card"><div class="ct">✈ Aéreo</div><div id="fc-wrap-air" style="position:relative;"></div></div>
+      <div class="card"><div class="ct">🛣️ Terrestre</div><div id="fc-wrap-ter" style="position:relative;"></div></div>
+    </div>
+    <div class="card"><div class="ct">⚓ Marítimo</div><div id="fc-wrap-mar" style="position:relative;max-width:900px;margin:0 auto;"></div></div>
+  </section>`);
+  setTimeout(()=>{
+    renderForecast();
+    document.querySelectorAll('.fc-pp-cb').forEach(cb=>cb.addEventListener('change',renderForecast));
+  },50);
+}
+
+function fcSetAll(state){
+  document.querySelectorAll('.fc-pp-cb').forEach(cb=>cb.checked=state);
+  renderForecast();
+}
+
+function renderForecast(){
+  const selPPs=Array.from(document.querySelectorAll('.fc-pp-cb:checked')).map(cb=>+cb.value);
+  const wks=FWKS.filter(w=>selPPs.includes(w.wk));
+  const wAir=FWKS_MODE['Aéreo'].filter(w=>selPPs.includes(w.wk));
+  const wMar=FWKS_MODE['Marítimo'].filter(w=>selPPs.includes(w.wk));
+  const wTer=FWKS_MODE['Terrestre'].filter(w=>selPPs.includes(w.wk));
+  const kC=fcMetric==='fcl'?'fcl_conf':'pal_conf',kP=fcMetric==='fcl'?'fcl_proj':'pal_proj',kA=fcMetric==='fcl'?'fcl_addon':'pal_addon';
+  const unit=fcMetric==='fcl'?'FCL':'Pallets';
+  const totC=wks.reduce((a,w)=>a+w[kC],0),totP=wks.reduce((a,w)=>a+w[kP],0),totA=wks.reduce((a,w)=>a+w[kA],0);
+  document.getElementById('fc-kg').innerHTML=`<div class="kg"><div class="kc" style="--acc:#2E8FB0"><div class="kl">${unit} Confirmado</div><div class="kv">${f1(totC)}<span class="u">${unit}</span></div><div class="kf">${wks.length} semana(s)</div></div><div class="kc" style="--acc:#E8A33D"><div class="kl">Proy. SOP+PRE</div><div class="kv">${f1(totP)}<span class="u">${unit}</span></div></div><div class="kc" style="--acc:#2E8B57"><div class="kl">ADD+EXPO</div><div class="kv">${f1(totA)}<span class="u">${unit}</span></div><div class="kf">adicionales</div></div><div class="kc" style="--acc:#163B54"><div class="kl">Total proyectado</div><div class="kv">${f1(totP+totA)}<span class="u">${unit}</span></div></div></div>`;
+  const rows=wks.map(w=>{
+    const hasC=w[kC]>0,ej=w[kP]>0?(w[kC]/w[kP]*100):0;
+    const cl=hasC?(ej>=90?'ok':ej>=70?'warn':'bad'):'neu';
+    const up=(w[kP]+w[kA])>=w[kC];
+    const ab=w[kA]>0?`<span class="addon ${up?'aup':'adn'}">${up?'▲':'▼'}${f1(w[kA])}</span>`:'';
+    const dev=hasC?(w[kC]-w[kP]>=0?'+':'')+f1(w[kC]-w[kP]):'—';
+    return`<tr><td style="font-family:'JetBrains Mono',monospace;font-weight:600;">${w.label}</td><td class="num">${f1(w[kP])} ${ab}</td><td class="num">${f1(w[kP]+w[kA])}</td><td class="num" style="color:#2E8FB0;font-weight:600;">${hasC?f1(w[kC]):'—'}</td><td class="num" style="color:${hasC&&w[kC]<w[kP]?'var(--bad)':'var(--ok)'};font-weight:600;">${dev}</td><td><span class="pill ${cl}">${hasC?fp(ej):'Sin ejec.'}</span></td></tr>`;
+  }).join('');
+  document.getElementById('fc-dev-body').innerHTML=rows||'<tr><td colspan="6" style="text-align:center;color:var(--mu);padding:16px;">Selecciona al menos un Pack Plan</td></tr>';
+  document.getElementById('fc-stat').textContent=`${wks.length} de ${FWKS.length} semanas seleccionadas · métrica: ${unit}`;
+  if(wks.length>1){
+    document.getElementById('fc-chart-wrap').innerHTML=buildChart(wks,'fc-g',fcMetric);
+    document.getElementById('fc-wrap-air').innerHTML=buildChart(wAir,'fc-air',fcMetric);
+    document.getElementById('fc-wrap-mar').innerHTML=buildChart(wMar,'fc-mar',fcMetric);
+    document.getElementById('fc-wrap-ter').innerHTML=buildChart(wTer,'fc-ter',fcMetric);
+    attachChart('fc-g',wks,fcMetric);attachChart('fc-air',wAir,fcMetric);attachChart('fc-mar',wMar,fcMetric);attachChart('fc-ter',wTer,fcMetric);
+  }else{
+    ['fc-chart-wrap','fc-wrap-air','fc-wrap-mar','fc-wrap-ter'].forEach(id=>document.getElementById(id).innerHTML='<div style="padding:40px;text-align:center;color:var(--mu);font-size:12px;">Selecciona 2+ semanas para trazar la curva</div>');
+  }
+}
+
+// ══════════════════════════════════════════════════════════════
+// 02 EXECUTE
+// ══════════════════════════════════════════════════════════════
+function bExec(){
+  const ex=EX,mxM=Math.max(...ex.dam_by_mode.map(m=>m.dam_with)),mxP=Math.max(...ex.dam_by_pp.map(p=>p.dam_unicas+p.sin_dam));
+  const modeBars=ex.dam_by_mode.map(m=>{const c=m.mode==='Aéreo'?'#2E8FB0':m.mode==='Marítimo'?'#163B54':'#7A6FD0';return`<div class="br" style="grid-template-columns:80px 1fr 54px;"><div class="lbl">${m.mode}</div><div class="bt"><div class="bf" style="width:${(m.dam_with/mxM*100).toFixed(1)}%;background:${c}"></div></div><div class="bv">${m.dam_with}</div></div>`;}).join('');
+  const damTbl=ex.dam_by_mode.map(m=>{const cl=sem(m.pct);const cm={ok:'var(--ok)',warn:'var(--warn)',bad:'var(--bad)'},bm={ok:'var(--ok-bg)',warn:'var(--warn-bg)',bad:'var(--bad-bg)'};return`<tr><td>${m.mode}</td><td class="num">${m.dam_with}</td><td class="num">${m.dam_without}</td><td class="num"><span style="padding:3px 10px;border-radius:20px;font-weight:700;font-size:10.5px;background:${bm[cl]};color:${cm[cl]};">${fp(m.pct)}</span></td></tr>`;}).join('');
+  const ppCols=ex.dam_by_pp.map(p=>{const t=p.dam_unicas+p.sin_dam,h=mxP>0?(t/mxP*100).toFixed(1):'0';return`<div class="sc-col"><div class="sc-val">${t}</div><div class="sc-bars" style="height:${h}%;"><div class="seg" style="height:${t>0?(p.dam_unicas/t*100).toFixed(1):0}%;background:#2E8FB0;"></div><div class="seg" style="height:${t>0?(p.sin_dam/t*100).toFixed(1):0}%;background:#EF9F27;"></div></div><div class="sc-lbl">${p.label}</div></div>`;}).join('');
+  main.insertAdjacentHTML('beforeend',`<section class="panel" id="p-execute">
+    <div class="ph"><div class="ey">06 · Resumen ejecutado</div><div class="pt">Execute — Despachos confirmados</div></div>
+    <div class="kg"><div class="kc" style="--acc:#2E8FB0"><div class="kl">DAMs únicas</div><div class="kv">${ex.dam_unique}</div><div class="kf">de ${ex.dam_unique+ex.dam_missing}</div></div><div class="kc" style="--acc:#C0392B"><div class="kl">Sin DAM</div><div class="kv">${ex.dam_missing}</div></div><div class="kc" style="--acc:#163B54"><div class="kl">FCL confirmado</div><div class="kv">${f1(ex.total_fcl)}<span class="u">FCL</span></div></div><div class="kc" style="--acc:#2E8FB0"><div class="kl">FCL aéreo</div><div class="kv">${f1(ex.fcl_aereo)}<span class="u">FCL</span></div><div class="kf">${fp(ex.fcl_aereo/ex.total_fcl*100)}</div></div><div class="kc" style="--acc:#163B54"><div class="kl">FCL marítimo</div><div class="kv">${f1(ex.fcl_maritimo)}<span class="u">FCL</span></div><div class="kf">${fp(ex.fcl_maritimo/ex.total_fcl*100)}</div></div><div class="kc" style="--acc:#7A6FD0"><div class="kl">FCL terrestre</div><div class="kv">${f1(ex.fcl_terrestre)}<span class="u">FCL</span></div><div class="kf">${fp(ex.fcl_terrestre/ex.total_fcl*100)}</div></div></div>
+    <div class="g2"><div class="card"><div class="ct">DAMs únicas por modo</div><div class="bars">${modeBars}</div></div><div class="card"><div class="ct">Cobertura DAM</div><div class="tbl-wrap"><table class="std"><thead><tr><th>Modo</th><th style="text-align:right">DAMs</th><th style="text-align:right">Sin DAM</th><th style="text-align:right">% Cob.</th></tr></thead><tbody>${damTbl}</tbody></table></div></div></div>
+    <div class="card"><div class="ct">DAMs por Pack Plan</div><div class="sc-chart">${ppCols}</div><div class="lrow"><div class="li2"><span class="ld2" style="background:#2E8FB0"></span>DAMs</div><div class="li2"><span class="ld2" style="background:#EF9F27"></span>Sin DAM</div></div></div>
+  </section>`);
+}
+
+// ══════════════════════════════════════════════════════════════
+// 03 PORTS
+// ══════════════════════════════════════════════════════════════
+function bPorts(){
+  const statuses=[...new Set(PORTS_RAW.map(r=>r.status))].sort();
+  const pps=[...new Set(PORTS_RAW.map(r=>r.pack_plan))].sort((a,b)=>a-b);
+  const ddField=(id,btnId,label,opts,labelFn)=>`<div class="fg">
+    <label>${label}</label>
+    <div class="dd-wrap">
+      <button type="button" class="dd-btn" id="${btnId}" onclick="ddToggle('${id}')"><span>Todos</span><span>▾</span></button>
+      <div class="dd-panel" id="${id}">
+        <div class="dd-actions"><button type="button" class="btn-popup" onclick="ddSetAll('${id}',true);ddLabel('${id}','${btnId}','Todos');renderPorts();">Todos</button><button type="button" class="btn-popup" onclick="ddSetAll('${id}',false);ddLabel('${id}','${btnId}','Todos');renderPorts();">Ninguno</button></div>
+        ${opts.map(o=>`<label class="dd-item"><input type="checkbox" value="${o}" checked onchange="ddLabel('${id}','${btnId}','Todos');renderPorts();">${labelFn?labelFn(o):o}</label>`).join('')}
+      </div>
+    </div>
+  </div>`;
+  main.insertAdjacentHTML('beforeend',`<section class="panel" id="p-ports">
+    <div class="ph"><div class="ey">02 · Puertos</div><div class="pt">Ports — Vista operativa</div></div>
+    <div class="card" style="margin-bottom:14px;">
+      <div class="ct">Filtro global <span class="sub" id="ports-gstat"></span></div>
+      <div class="filter-bar">
+        <div class="fg">
+          <label>Métrica</label>
+          <div style="display:flex;gap:6px;">
+            <button type="button" id="ports-btn-fcl" class="btn-popup active" style="font-size:11px;padding:5px 12px;font-weight:700;" onclick="portsSetMetric('fcl')">📦 FCL</button>
+            <button type="button" id="ports-btn-po" class="btn-popup" style="font-size:11px;padding:5px 12px;font-weight:700;" onclick="portsSetMetric('po')">🧾 PO</button>
+          </div>
+        </div>
+        ${ddField('ports-st-panel','ports-st-btn','Status',statuses)}
+        ${ddField('ports-pp-panel','ports-pp-btn','Pack Plan',pps,pp=>`S${pp}`)}
+      </div>
+    </div>
+    <div class="kg" id="ports-kg"></div>
+    <div class="sec-title">⚓ Puertos (POL)</div>
+    <div class="port-panel" id="ports-cards"></div>
+    <div class="g2"><div class="card"><div class="ct">Estado global</div><div class="donut-wrap" id="ports-donut"></div></div><div class="card"><div class="ct">Registros por puerto</div><div id="ports-bars"></div></div></div>
+    <div class="sec-title">📈 Proyección por Puertos</div>
+    <div class="card">
+      <div class="ct">Distribución por Pack Plan <span class="sub" id="ports-proj-stat"></span></div>
+      <div style="position:relative;"><div class="sc-chart" id="ports-proj-chart" style="height:260px;"></div></div>
+      <div class="lrow" id="ports-proj-legend"></div>
+    </div>
+  </section>`);
+  setTimeout(()=>{ renderPorts(); },50);
+}
+
+let portsMetric='fcl';
+function portsSetMetric(m){
+  portsMetric=m;
+  document.getElementById('ports-btn-fcl').classList.toggle('active',m==='fcl');
+  document.getElementById('ports-btn-po').classList.toggle('active',m==='po');
+  renderPorts();
+}
+
+function renderPorts(){
+
+  const selST=ddChecked('ports-st-panel');
+  const selPP=ddChecked('ports-pp-panel').map(v=>+v);
+  let ft=PORTS_RAW;
+  if(selST.length)ft=ft.filter(r=>selST.includes(r.status));
+  if(selPP.length)ft=ft.filter(r=>selPP.includes(r.pack_plan));
+  document.getElementById('ports-gstat').textContent=`${ft.length} de ${PORTS_RAW.length} registros`;
+
+  const total_recs=ft.length,confirmados=ft.filter(r=>r.status==='Confirmado').length,proyectados=ft.filter(r=>r.status==='Proyectado').length,cancelados=ft.filter(r=>r.status==='Cancelado').length;
+  const tasa_conf=total_recs?confirmados/total_recs*100:0,tasa_canc=total_recs?cancelados/total_recs*100:0;
+  document.getElementById('ports-kg').innerHTML=`<div class="kc" style="--acc:#2E8FB0"><div class="kl">Total</div><div class="kv">${total_recs}</div></div><div class="kc" style="--acc:#2E8FB0"><div class="kl">Confirmados</div><div class="kv">${confirmados}</div><div class="kf">${total_recs?fp(tasa_conf):'—'}</div></div><div class="kc" style="--acc:#D7CDB0"><div class="kl">Proyectados</div><div class="kv">${proyectados}</div><div class="kf">${total_recs?fp(proyectados/total_recs*100):'—'}</div></div><div class="kc" style="--acc:#C0392B"><div class="kl">Cancelados</div><div class="kv">${cancelados}</div><div class="kf">${total_recs?fp(tasa_canc):'—'}</div></div>`;
+
+  const colors={"Lima":"#E8A33D","Callao":"#2E8FB0","Chancay":"#163B54","Paita":"#7A6FD0"};
+  const ports=["Lima","Callao","Chancay","Paita"];
+  const portStats=ports.map(port=>{
+    const sub=ft.filter(r=>r.port===port);
+    const tot=sub.length;
+    const c=sub.filter(r=>r.status==='Confirmado').length,p=sub.filter(r=>r.status==='Proyectado').length,k=sub.filter(r=>r.status==='Cancelado').length;
+    const cumpl=tot?c/tot*100:0;
+    const confSub=sub.filter(r=>r.status==='Confirmado');
+    const metricVal=portsMetric==='fcl'?confSub.reduce((a,r)=>a+r.fcl,0):new Set(confSub.filter(r=>r.po).map(r=>r.po)).size;
+    const modeCounts={};sub.forEach(r=>{if(r.mode)modeCounts[r.mode]=(modeCounts[r.mode]||0)+1;});
+    const mode=Object.keys(modeCounts).sort((a,b)=>modeCounts[b]-modeCounts[a])[0]||'';
+    return{port,conf:c,proy:p,canc:k,total:tot,cumpl,metricVal,mode,color:colors[port]};
+  }).filter(p=>p.total>0);
+
+  const portCards=portStats.map(p=>{const c=Math.min(p.cumpl,100),cc=c>=80?'var(--ok)':c>=50?'var(--warn)':'var(--bad)',sl=c>=80?'✅ Óptimo':c>=50?'⚠️ Revisar':'🔴 Crítico';
+    return`<div class="port-card" style="--pc:${p.color}"><div class="pcn">${p.port}<span class="badge" style="background:${p.color}20;color:${p.color};">${p.mode==='Aéreo'?'✈':p.mode==='Marítimo'?'⚓':'🚚'} ${p.mode||'—'}</span></div><div class="pcs"><span>${portsMetric==='fcl'?'FCL conf.':'PO conf.'}</span><b>${portsMetric==='fcl'?f1(p.metricVal):p.metricVal}</b></div><div class="pcs"><span>Confirmado</span><b style="color:#2E8FB0">${p.conf}</b></div><div class="pcs"><span>Proyectado</span><b>${p.proy}</b></div><div class="pcs"><span>Cancelado</span><b style="color:var(--bad)">${p.canc}</b></div><div class="pcs"><span>% Cumplimiento</span><b style="color:${cc}">${fp(c)}</b></div><div class="pcm"><div style="width:${(p.conf/p.total*100).toFixed(1)}%;background:#2E8FB0"></div><div style="width:${(p.proy/p.total*100).toFixed(1)}%;background:#D7CDB0"></div><div style="width:${(p.canc/p.total*100).toFixed(1)}%;background:#C0392B"></div></div><div class="pc-footer"><div class="pc-stat"><div class="pc-stat-val">${p.total}</div><div class="pc-stat-lbl">Registros</div></div><div class="pc-stat"><div class="pc-stat-val" style="font-size:14px;color:${cc}">${fp(c)}</div><div class="pc-stat-lbl">Cumplim.</div></div></div><div style="margin-top:8px;font-size:10px;text-align:center;padding:4px 8px;border-radius:6px;background:${p.color}15;color:${p.color};font-weight:600;">${sl}</div></div>`;
+  }).join('');
+  document.getElementById('ports-cards').innerHTML=portCards||'<div style="color:var(--mu);font-size:12px;padding:12px;">Sin registros para este filtro</div>';
+
+  const portBars=portStats.map(p=>`<div style="display:grid;grid-template-columns:72px 1fr 72px;align-items:center;gap:8px;margin-bottom:8px;"><div style="text-align:right;font-size:11px;font-weight:500;">${p.port}</div><div style="background:#EFEBE0;border-radius:5px;height:14px;overflow:hidden;display:flex;"><div style="width:${(p.conf/p.total*100).toFixed(1)}%;background:#2E8FB0;height:100%;"></div><div style="width:${(p.proy/p.total*100).toFixed(1)}%;background:#D7CDB0;height:100%;"></div><div style="width:${(p.canc/p.total*100).toFixed(1)}%;background:#C0392B;height:100%;"></div></div><div style="font-family:'JetBrains Mono',monospace;font-weight:600;font-size:11px;">${p.total}</div></div>`).join('');
+  document.getElementById('ports-bars').innerHTML=portBars||'<div style="color:var(--mu);font-size:12px;padding:8px;">Sin datos</div>';
+
+  const slices=[{n:'Confirmado',v:confirmados,c:'#2E8FB0'},{n:'Proyectado',v:proyectados,c:'#D7CDB0'},{n:'Cancelado',v:cancelados,c:'#C0392B'}];
+  let cum=0;const conic=total_recs?slices.map(s=>{const st=cum,en=cum+(s.v/total_recs*360);cum=en;return`${s.c} ${st.toFixed(1)}deg ${en.toFixed(1)}deg`;}).join(','):'#EFEBE0 0deg 360deg';
+  document.getElementById('ports-donut').innerHTML=`<div style="width:120px;height:120px;border-radius:50%;background:conic-gradient(${conic});flex-shrink:0;position:relative;"><div style="position:absolute;inset:16px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;"><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:18px;">${total_recs}</div><div style="font-size:8px;color:var(--mu);">total</div></div></div><div class="dl">${slices.map(s=>`<div class="dli"><span class="dls" style="background:${s.c}"></span><span>${s.n}</span><span class="dlv">${s.v}·${total_recs?fp(s.v/total_recs*100):'0%'}</span></div>`).join('')}</div>`;
+
+  // Proyección por Puertos — stacked distribution by Pack Plan, respects the same global filters
+  const weeks=[...new Set(ft.map(r=>r.pack_plan))].sort((a,b)=>a-b);
+  const byWeekPort={};
+  weeks.forEach(wk=>{byWeekPort[wk]={};ports.forEach(p=>byWeekPort[wk][p]=0);});
+  ft.forEach(r=>{
+    if(!ports.includes(r.port))return;
+    if(portsMetric==='fcl')byWeekPort[r.pack_plan][r.port]+=r.fcl;
+    else byWeekPort[r.pack_plan][r.port]+=1;
+  });
+  const mx=Math.max(...weeks.map(wk=>ports.reduce((a,p)=>a+byWeekPort[wk][p],0)),1);
+  const cols=weeks.map(wk=>{
+    const tot=ports.reduce((a,p)=>a+byWeekPort[wk][p],0);
+    const h=(tot/mx*100).toFixed(1);
+    const segs=ports.map(p=>`<div class="seg" style="height:${tot>0?(byWeekPort[wk][p]/tot*100).toFixed(1):0}%;background:${colors[p]};"></div>`).join('');
+    return`<div class="sc-col" data-wk="${wk}" style="cursor:pointer;"><div class="sc-val">${portsMetric==='fcl'?f1(tot):tot}</div><div class="sc-bars" style="height:${h}%;">${segs}</div><div class="sc-lbl">S${wk}</div></div>`;
+  }).join('');
+  document.getElementById('ports-proj-chart').innerHTML=cols||'<div style="color:var(--mu);font-size:12px;padding:20px;">Sin registros para este filtro</div>';
+  document.getElementById('ports-proj-legend').innerHTML=ports.map(p=>`<div class="li2"><span class="ld2" style="background:${colors[p]}"></span>${p}</div>`).join('');
+  document.getElementById('ports-proj-stat').textContent=`${weeks.length} semana(s) · métrica: ${portsMetric==='fcl'?'FCL':'PO'}`;
+  const unit=portsMetric==='fcl'?'FCL':'PO';
+  document.querySelectorAll('#ports-proj-chart .sc-col').forEach(col=>{
+    col.addEventListener('mouseenter',()=>{
+      const wk=+col.dataset.wk;
+      const tot=ports.reduce((a,p)=>a+byWeekPort[wk][p],0);
+      ttEl.innerHTML=`<div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;margin-bottom:7px;padding-bottom:5px;border-bottom:1px solid rgba(255,255,255,.15);">Pack Plan S${wk}</div>`+
+        ports.map(p=>`<div style="display:flex;gap:7px;margin-bottom:4px;"><span style="width:8px;height:8px;border-radius:2px;background:${colors[p]};flex-shrink:0;margin-top:2px;"></span><span style="flex:1;opacity:.85;">${p}</span><b style="font-family:'JetBrains Mono',monospace;">${portsMetric==='fcl'?f1(byWeekPort[wk][p]):byWeekPort[wk][p]} ${unit}</b></div>`).join('')+
+        `<div style="border-top:1px solid rgba(255,255,255,.15);margin-top:6px;padding-top:5px;display:flex;justify-content:space-between;"><span style="opacity:.8">Total</span><b style="font-family:'JetBrains Mono',monospace;">${portsMetric==='fcl'?f1(tot):tot} ${unit}</b></div>`;
+      ttEl.style.opacity='1';
+      const sr=col.parentElement.getBoundingClientRect(),cr=col.getBoundingClientRect();
+      let left=cr.left-sr.left+cr.width/2-90,top=cr.top-sr.top+18;
+      if(left<0)left=0;if(left+200>sr.width)left=sr.width-205;
+      ttEl.style.left=(left+sr.left+window.scrollX)+'px';ttEl.style.top=(top+sr.top+window.scrollY)+'px';
+    });
+    col.addEventListener('mouseleave',()=>{ttEl.style.opacity='0';});
+  });
+}
+
+// ══════════════════════════════════════════════════════════════
+// 04 AIR PROGRAM
+// ══════════════════════════════════════════════════════════════
+function bAir(){
+  const dds=[...new Set(AIR.map(r=>r.dispatch).filter(Boolean))].sort((a,b)=>{const[da,ma,ya]=a.split('/'),[db,mb,yb]=b.split('/');return new Date(+ya,+ma-1,+da)-new Date(+yb,+mb-1,+db);});
+  const ddHasBlank=AIR.some(r=>!r.dispatch);
+  const lops=[...new Set(AIR.map(r=>r.log_op).filter(Boolean))].sort();
+  const loHasBlank=AIR.some(r=>!r.log_op);
+  const atPPs=[...new Set(AIR.map(r=>r.pack_plan))].sort((a,b)=>a-b);
+  const ddField=(id,btnId,label,opts,labelFn,hasBlank)=>`<div class="fg">
+    <label>${label}</label>
+    <div class="dd-wrap">
+      <button type="button" class="dd-btn" id="${btnId}" onclick="ddToggle('${id}')"><span>Todos</span><span>▾</span></button>
+      <div class="dd-panel" id="${id}">
+        <div class="dd-actions"><button type="button" class="btn-popup" onclick="ddSetAll('${id}',true);ddLabel('${id}','${btnId}','Todos');renderAirAll();">Todos</button><button type="button" class="btn-popup" onclick="ddSetAll('${id}',false);ddLabel('${id}','${btnId}','Todos');renderAirAll();">Ninguno</button></div>
+        ${opts.map(o=>`<label class="dd-item"><input type="checkbox" value="${o}" checked onchange="ddLabel('${id}','${btnId}','Todos');renderAirAll();">${labelFn?labelFn(o):o}</label>`).join('')}
+        ${hasBlank?`<label class="dd-item"><input type="checkbox" value="" checked onchange="ddLabel('${id}','${btnId}','Todos');renderAirAll();">(vacío)</label>`:''}
+      </div>
+    </div>
+  </div>`;
+  main.insertAdjacentHTML('beforeend',`<section class="panel" id="p-air">
+    <div class="ph"><div class="ey">05 · Carga aérea</div><div class="pt">Air Program</div><div class="ps">${AIR.length} despachos aéreos confirmados · 🚛 datos del conductor</div></div>
+    <div class="card" style="margin-bottom:14px;">
+      <div class="ct">Filtro global <span class="sub" id="air-gstat"></span></div>
+      <div class="filter-bar">
+        <span class="filter-tag">Status: Confirmado</span>
+        <span class="filter-tag">Mode: Aéreo</span>
+        ${ddField('air-pp-panel','air-pp-btn','Pack Plan',atPPs,pp=>`S${pp}`,false)}
+        ${ddField('air-dd-panel','air-dd-btn','Dispatch Date',dds,null,ddHasBlank)}
+        ${ddField('air-lo-panel','air-lo-btn','Logistics Operator',lops,null,loHasBlank)}
+      </div>
+    </div>
+    <div class="kg" id="air-kg"></div>
+    <div class="sec-title">✈ Participación por Aereolínea – PO</div>
+    <div class="g2" id="air-airlines"></div>
+    <div class="card">
+      <div class="ct">Despachos aéreos <span class="sub" id="air-stat"></span></div>
+      <div class="tbl-scroll"><table class="dt"><thead><tr><th>Shipper</th><th>Instruction</th><th>Log. Op.</th><th>Destino</th><th>Dispatch Day</th><th style="text-align:right">Pallets</th><th>AWB</th><th>File</th><th>Line</th><th>Transp. Op.</th><th>BASC</th><th>DAM</th><th></th></tr></thead><tbody id="air-body"></tbody></table></div>
+    </div>
+    <div class="sec-title">🛫 Air Transport — Tabla dinámica</div>
+    <div class="card">
+      <div class="ct">Packing / Instruction <span class="sub" id="at-stat"></span></div>
+      <div class="pivot-wrap"><div class="pivot-scroll" style="max-height:560px;"><table class="pivot"><thead><tr><th>Packing</th><th>Instruction</th><th>Dispatch Date</th><th>Shipper</th><th>Logistics</th><th>Positioning Time</th><th>Gate-In Storage</th><th style="text-align:right">Suma de Pallets</th><th style="text-align:right">Suma de FCL</th></tr></thead><tbody id="at-body"></tbody></table></div></div>
+    </div>
+  </section>`);
+  setTimeout(()=>{ renderAirAll(); },50);
+}
+
+function renderAirAll(){
+  const selPPs=ddChecked('air-pp-panel').map(v=>+v);
+  const selDD=ddChecked('air-dd-panel');
+  const selLO=ddChecked('air-lo-panel');
+  let ft=AIR;
+  if(selPPs.length)ft=ft.filter(r=>selPPs.includes(r.pack_plan));
+  if(selDD.length)ft=ft.filter(r=>selDD.includes(r.dispatch));
+  if(selLO.length)ft=ft.filter(r=>selLO.includes(r.log_op));
+  document.getElementById('air-gstat').textContent=`${ft.length} de ${AIR.length} registros`;
+
+  const totPal=ft.reduce((a,r)=>a+r.pallets,0),fin=ft.filter(r=>r.basc==='FINALIZADO').length,poCount=new Set(ft.filter(r=>r.po).map(r=>r.po)).size;
+  document.getElementById('air-kg').innerHTML=`<div class="kc" style="--acc:#2E8FB0"><div class="kl">DESPACHOS (REGISTRO TOTAL)</div><div class="kv">${ft.length}</div></div><div class="kc" style="--acc:#E8A33D"><div class="kl">PO ASIGNADA</div><div class="kv">${poCount}</div><div class="kf">${ft.length?fp(poCount/ft.length*100):'—'}</div></div><div class="kc" style="--acc:#7A6FD0"><div class="kl">Pallets</div><div class="kv">${totPal}</div></div><div class="kc" style="--acc:#2E8B57"><div class="kl">BASC Final.</div><div class="kv">${fin}</div><div class="kf">${ft.length?fp(fin/ft.length*100):'—'}</div></div>`;
+
+  const byLine={};
+  ft.forEach(r=>{if(!r.po)return;const ln=r.line||'(sin línea)';if(!byLine[ln])byLine[ln]=new Set();byLine[ln].add(r.po);});
+  const palette=["#E8A33D","#2E8FB0","#163B54","#7A6FD0","#C0392B","#2E8B57","#C77D1E","#9CA3AF","#6B7280","#1C2940"];
+  const airlinesF=Object.entries(byLine).map(([name,s])=>({name,count:s.size})).sort((a,b)=>b.count-a.count).map((a,i)=>({...a,color:palette[i%palette.length]}));
+  const totalPO=airlinesF.reduce((a,x)=>a+x.count,0)||1,mxPO=Math.max(...airlinesF.map(a=>a.count),1);
+  const airBars=airlinesF.map(a=>`<div style="display:grid;grid-template-columns:100px 1fr 90px;align-items:center;gap:8px;margin-bottom:8px;"><div style="text-align:right;font-size:11px;font-weight:500;display:flex;align-items:center;gap:5px;justify-content:flex-end;"><span style="width:8px;height:8px;border-radius:2px;background:${a.color};flex-shrink:0;"></span>${a.name}</div><div style="background:#EFEBE0;border-radius:5px;height:14px;overflow:hidden;"><div style="width:${(a.count/mxPO*100).toFixed(1)}%;background:${a.color};height:100%;border-radius:5px;"></div></div><div style="font-family:'JetBrains Mono',monospace;font-weight:600;font-size:11px;">${a.count}<span style="color:var(--mu);font-weight:400;font-size:9.5px;"> ${fp(a.count/totalPO*100)}</span></div></div>`).join('');
+  let cumA=0;const airConic=airlinesF.map(a=>{const st=cumA,en=cumA+(a.count/totalPO*360);cumA=en;return`${a.color} ${st.toFixed(1)}deg ${en.toFixed(1)}deg`;}).join(',')||'#EFEBE0 0deg 360deg';
+  const airLeg=airlinesF.map(a=>`<div class="dli"><span class="dls" style="background:${a.color}"></span><span>${a.name}</span><span class="dlv">${a.count}·${fp(a.count/totalPO*100)}</span></div>`).join('');
+  document.getElementById('air-airlines').innerHTML=`<div class="card"><div class="ct">PO por aerolínea</div>${airBars||'<div style="color:var(--mu);font-size:12px;padding:8px;">Sin datos</div>'}</div><div class="card"><div class="ct">Distribución</div><div class="donut-wrap"><div style="width:130px;height:130px;border-radius:50%;background:conic-gradient(${airConic});flex-shrink:0;position:relative;"><div style="position:absolute;inset:18px;background:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-direction:column;"><div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:17px;">${totalPO}</div><div style="font-size:8px;color:var(--mu);">PO</div></div></div><div class="dl">${airLeg}</div></div></div>`;
+
+  renderAirTable(ft);
+  renderAirTransport(ft);
+}
+
+function renderAirTable(ft){
+  const tblR=ft.map(r=>{const cl=r.basc==='FINALIZADO'?'ok':r.basc.includes('PACKING')||r.basc.includes('RUTA')?'warn':r.basc?'bad':'neu';const js=JSON.stringify(r).replace(/\\/g,'\\\\').replace(/'/g,"\\'");return`<tr><td>${r.shipper||'—'}</td><td class="mono">${r.instruction||'—'}</td><td>${r.log_op||'—'}</td><td>${r.dest||'—'}</td><td class="mono">${r.dispatch||'—'}</td><td class="num">${r.pallets||0}</td><td class="mono">${r.awb||'—'}</td><td class="mono">${r.file||'—'}</td><td>${r.line||'—'}</td><td>${r.transp_op||'—'}</td><td><span class="pill ${cl}" style="font-size:9px;">${r.basc||'—'}</span></td><td class="mono">${r.dam||'—'}</td><td><button class="btn-popup" onclick='openM(${js})'>🚛</button></td></tr>`;}).join('');
+  document.getElementById('air-body').innerHTML=tblR;
+  document.getElementById('air-stat').textContent=`${ft.length} filas`;
+}
+
+function renderAirTransport(ft){
+  const pkGroups={};
+  ft.forEach(r=>{const pk=r.packing||'(en blanco)';if(!pkGroups[pk])pkGroups[pk]={};const ins=r.instruction||'(en blanco)';if(!pkGroups[pk][ins])pkGroups[pk][ins]=[];pkGroups[pk][ins].push(r);});
+  let html='',gtPal=0,gtFcl=0,rows=0;
+  Object.keys(pkGroups).sort().forEach(pk=>{
+    const insMap=pkGroups[pk];let pkPal=0,pkFcl=0,pkFirst=true;
+    Object.keys(insMap).sort().forEach(ins=>{
+      const recs=insMap[ins];let insPal=0,insFcl=0;
+      recs.forEach((r,i)=>{
+        insPal+=r.pallets;insFcl+=r.fcl;rows++;
+        html+=`<tr>${(pkFirst&&i===0)?`<td rowspan="PK_${pk}" style="background:#E8F4F8;font-weight:700;border-right:2px solid var(--sky);vertical-align:top;">${pk}</td>`:''}${i===0?`<td rowspan="${recs.length}" style="vertical-align:top;font-weight:500;">${ins}</td>`:''}<td class="mono">${r.dispatch||'—'}</td><td>${r.shipper||'—'}</td><td>${r.log_op||'(en blanco)'}</td><td class="mono">${r.postime||'(en blanco)'}</td><td>${r.gatein||'(en blanco)'}</td><td class="fv">${r.pallets||0}</td><td class="fv">${f1(r.fcl)}</td></tr>`;
+      });
+      html+=`<tr class="pk-total"><td colspan="2">Total ${ins}</td><td colspan="4"></td><td class="fv">${insPal}</td><td class="fv">${f1(insFcl)}</td></tr>`;
+      pkPal+=insPal;pkFcl+=insFcl;pkFirst=false;
+    });
+    html+=`<tr class="grand-total"><td colspan="2">Total ${pk}</td><td colspan="4"></td><td class="fv">${pkPal}</td><td class="fv">${f1(pkFcl)}</td></tr>`;
+    gtPal+=pkPal;gtFcl+=pkFcl;
+  });
+  html+=`<tr class="grand-total" style="background:#163B54;color:#fff;"><td colspan="6">Total general</td><td class="fv">${gtPal}</td><td class="fv">${f1(gtFcl)}</td></tr>`;
+  document.getElementById('at-body').innerHTML=html;
+  Object.keys(pkGroups).forEach(pk=>{
+    let n=0;Object.values(pkGroups[pk]).forEach(recs=>n+=recs.length+1);
+    document.querySelectorAll(`td[rowspan="PK_${pk}"]`).forEach(td=>td.setAttribute('rowspan',n));
+  });
+  document.getElementById('at-stat').textContent=`${rows} filas · ${f1(gtFcl)} FCL`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// 05 WEEKLY (tabla unificada)
+// ══════════════════════════════════════════════════════════════
+function bWeekly(){
+  const pps=[...new Set(WROWS.map(r=>r.pack_plan))].sort((a,b)=>a-b);
+  const pks=[...new Set(WROWS.map(r=>r.packing).filter(Boolean))].sort();
+  const shs=[...new Set(WROWS.map(r=>r.shipper).filter(Boolean))].sort();
+  const modes=['Aéreo','Marítimo','Terrestre'];
+  const ddField=(id,btnId,label,opts,labelFn)=>`<div class="fg">
+    <label>${label}</label>
+    <div class="dd-wrap">
+      <button type="button" class="dd-btn" id="${btnId}" onclick="ddToggle('${id}')"><span>Todos</span><span>▾</span></button>
+      <div class="dd-panel" id="${id}">
+        <div class="dd-actions"><button type="button" class="btn-popup" onclick="ddSetAll('${id}',true);ddLabel('${id}','${btnId}','Todos');renderWeekly();">Todos</button><button type="button" class="btn-popup" onclick="ddSetAll('${id}',false);ddLabel('${id}','${btnId}','Todos');renderWeekly();">Ninguno</button></div>
+        ${opts.map(o=>`<label class="dd-item"><input type="checkbox" value="${o}" checked onchange="ddLabel('${id}','${btnId}','Todos');renderWeekly();">${labelFn?labelFn(o):o}</label>`).join('')}
+      </div>
+    </div>
+  </div>`;
+  main.insertAdjacentHTML('beforeend',`<section class="panel" id="p-weekly">
+    <div class="ph"><div class="ey">03 · Programa semanal</div><div class="pt">Weekly Program — Export Summary</div><div class="ps">Status: Confirmado · todos los modos · FCL por fecha de despacho/carga</div></div>
+    <div class="sec-title">📦 Export Summary — Todos los modos</div>
+    <div class="card">
+      <div class="ct">Tabla dinámica unificada <span class="sub" id="wk-stat"></span></div>
+      <div class="filter-bar">
+        <span class="filter-tag">Status: Confirmado</span>
+        ${ddField('wk-pp-panel','wk-pp-btn','Pack Plan',pps,pp=>`S${pp}`)}
+        ${ddField('wk-pk-panel','wk-pk-btn','Packing',pks)}
+        ${ddField('wk-sh-panel','wk-sh-btn','Shipper',shs)}
+        ${ddField('wk-mo-panel','wk-mo-btn','Modo',modes,m=>m==='Aéreo'?'✈ Aéreo':m==='Marítimo'?'⚓ Marítimo':'🛣️ Terrestre')}
+      </div>
+      <div class="pivot-wrap"><div class="pivot-scroll"><table class="pivot"><thead id="wk-head"></thead><tbody id="wk-body"></tbody></table></div></div>
+    </div>
+  </section>`);
+  setTimeout(()=>{renderWeekly();},50);
+}
+
+function renderWeekly(){
+  const selPPs=ddChecked('wk-pp-panel').map(v=>+v);
+  const selPKs=ddChecked('wk-pk-panel');
+  const selSHs=ddChecked('wk-sh-panel');
+  const selMOs=ddChecked('wk-mo-panel');
+  let ft=WROWS;
+  if(selPPs.length)ft=ft.filter(r=>selPPs.includes(r.pack_plan));
+  if(selPKs.length)ft=ft.filter(r=>selPKs.includes(r.packing));
+  if(selSHs.length)ft=ft.filter(r=>selSHs.includes(r.shipper));
+  if(selMOs.length)ft=ft.filter(r=>selMOs.includes(r.mode));
+  const allDates=[...new Set(ft.map(r=>r.date).filter(Boolean))].sort();
+  const hasSF=ft.some(r=>!r.date),cols=[...allDates,...(hasSF?['']:[])];
+  const cell={},pkSet=new Set(),modeByPk={},shipByPkMode={},podByPkModeShip={};
+  ft.forEach(r=>{const dk=r.date||'',key=`${r.packing}||${r.mode}||${r.shipper}||${r.pod}`;if(!cell[key])cell[key]={};cell[key][dk]=(cell[key][dk]||0)+r.fcl;pkSet.add(r.packing);if(!modeByPk[r.packing])modeByPk[r.packing]=new Set();modeByPk[r.packing].add(r.mode);const pmk=`${r.packing}||${r.mode}`;if(!shipByPkMode[pmk])shipByPkMode[pmk]=new Set();shipByPkMode[pmk].add(r.shipper);const pmsk=`${r.packing}||${r.mode}||${r.shipper}`;if(!podByPkModeShip[pmsk])podByPkModeShip[pmsk]=new Set();podByPkModeShip[pmsk].add(r.pod);});
+  const packings=[...pkSet].sort(),mO=['Aéreo','Marítimo','Terrestre'];
+  const mIcon=m=>m==='Aéreo'?'✈':m==='Marítimo'?'⚓':'🛣️',mCls=m=>m==='Aéreo'?'mA':m==='Marítimo'?'mM':'mT';
+  document.getElementById('wk-head').innerHTML=`<tr><th>Packing</th><th>Mode</th><th>Shipper</th><th>POD</th>${cols.map(d=>`<th class="dh">${d?fmtDate(d):'Sin fecha'}</th>`).join('')}<th class="tot-h">Total</th></tr>`;
+  const gt={};cols.forEach(d=>{gt[d]=0;});gt['__t']=0;
+  let html='';
+  packings.forEach(pk=>{
+    const pkT={};cols.forEach(d=>{pkT[d]=0;});pkT['__t']=0;let pkN=0;
+    const modes=[...modeByPk[pk]].sort((a,b)=>mO.indexOf(a)-mO.indexOf(b));
+    modes.forEach(mode=>{
+      const pmk=`${pk}||${mode}`,shippers=[...shipByPkMode[pmk]].sort();
+      shippers.forEach(sh=>{
+        const pmsk=`${pk}||${mode}||${sh}`,pods=[...podByPkModeShip[pmsk]].sort();
+        pods.forEach((pod,pi)=>{
+          const key=`${pk}||${mode}||${sh}||${pod}`,data=cell[key]||{};let rt=0;
+          const cells=cols.map(d=>{const v=data[d]||0;pkT[d]+=v;gt[d]+=v;rt+=v;return v>0?`<td class="fv">${f1(v)}</td>`:`<td class="fz">·</td>`;}).join('');
+          pkT['__t']+=rt;gt['__t']+=rt;
+          html+=`<tr>${pkN===0?`<td rowspan="PKSP_${pk}" style="background:#E8F4F8;font-weight:700;border-right:2px solid var(--sky);vertical-align:top;padding-top:8px;">${pk}</td>`:''} ${pi===0&&pods.indexOf(pod)===0&&shippers.indexOf(sh)===0?`<td rowspan="MDSP_${pk}_${mode}" style="vertical-align:top;padding-top:7px;"><span class="mode-badge ${mCls(mode)}">${mIcon(mode)} ${mode}</span></td>`:''} ${pi===0?`<td rowspan="${pods.length}" style="vertical-align:top;padding-top:7px;font-weight:500;">${sh}</td>`:''}<td>${pod}</td>${cells}<td class="tot-v">${rt}</td></tr>`;
+          pkN++;
+        });
+      });
+    });
+    html+=`<tr class="pk-total"><td colspan="4">Total ${pk}</td>${cols.map(d=>pkT[d]>0?`<td class="fv">${f1(pkT[d])}</td>`:`<td class="fz">·</td>`).join('')}<td class="tot-v">${f1(pkT['__t'])}</td></tr>`;
+  });
+  html+=`<tr class="grand-total"><td colspan="4">Total general</td>${cols.map(d=>gt[d]>0?`<td class="fv">${f1(gt[d])}</td>`:`<td class="fz" style="color:#666;">·</td>`).join('')}<td class="tot-v">${f1(gt['__t'])}</td></tr>`;
+  document.getElementById('wk-body').innerHTML=html;
+  // Fix rowspans
+  packings.forEach(pk=>{
+    document.querySelectorAll(`td[rowspan="PKSP_${pk}"]`).forEach(td=>{let n=0;[...modeByPk[pk]].sort((a,b)=>mO.indexOf(a)-mO.indexOf(b)).forEach(m=>{const pmk=`${pk}||${m}`;[...shipByPkMode[pmk]].sort().forEach(sh=>{n+=[...podByPkModeShip[`${pk}||${m}||${sh}`]].length;});});td.setAttribute('rowspan',n);});
+    [...modeByPk[pk]].sort((a,b)=>mO.indexOf(a)-mO.indexOf(b)).forEach(m=>{document.querySelectorAll(`td[rowspan="MDSP_${pk}_${m}"]`).forEach(td=>{let n=0;const pmk=`${pk}||${m}`;[...shipByPkMode[pmk]].sort().forEach(sh=>{n+=[...podByPkModeShip[`${pk}||${m}||${sh}`]].length;});td.setAttribute('rowspan',n);});});
+  });
+  document.getElementById('wk-stat').textContent=`${ft.length} filas · ${f1(gt['__t'])} FCL`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// 06 PMI — SENASA PROGRAM
+// ══════════════════════════════════════════════════════════════
+function bPMI(){
+  const pkOpts=[...new Set([...SENASA.map(r=>r.packing),...EMBARQUES.map(r=>r.packing),...TR_PROGRAM.map(r=>r.packing)].filter(Boolean))].sort();
+  const ppOpts=[...new Set([...SENASA.map(r=>r.pack_plan),...EMBARQUES.map(r=>r.pack_plan),...TR_PROGRAM.map(r=>r.pack_plan)])].sort((a,b)=>a-b);
+  const ddOptsRaw=[...SENASA.map(r=>r.dispatch_date),...EMBARQUES.map(r=>r.dispatch_date),...TR_PROGRAM.map(r=>r.dispatch_date)];
+  const ddOpts=[...new Set(ddOptsRaw.filter(Boolean))].sort((a,b)=>{const[da,ma,ya]=a.split('/'),[db,mb,yb]=b.split('/');return new Date(+ya,+ma-1,+da)-new Date(+yb,+mb-1,+db);});
+  const ddHasBlank=ddOptsRaw.some(d=>!d);
+  const inspectors=[...new Set(SENASA.map(r=>r.inspector).filter(Boolean))].sort();
+  const trLns=[...new Set(TR_PROGRAM.map(r=>r.line).filter(Boolean))].sort();
+  const trTimesRaw=[...new Set(TR_PROGRAM.map(r=>r.tr_time))];
+  const trTimes=trTimesRaw.filter(t=>t).sort();
+  const trHasBlank=trTimesRaw.some(t=>!t);
+  main.insertAdjacentHTML('beforeend',`<section class="panel" id="p-pmi">
+    <div class="ph"><div class="ey">04 · Performance Management Index</div><div class="pt">PMI</div><div class="ps">Programa SENASA · Status: Confirmado</div></div>
+    <div class="card" style="margin-bottom:14px;">
+      <div class="ct">Filtro global <span class="sub" id="pmi-stat"></span></div>
+      <div class="filter-bar">
+        <span class="filter-tag">Status: Confirmado</span>
+        <div class="fg"><label>Packing</label><select id="pmi-pk"><option value="ALL">Todos</option>${pkOpts.map(pk=>`<option value="${pk}">${pk}</option>`).join('')}</select></div>
+        <div class="fg">
+          <label>Pack Plan</label>
+          <div class="dd-wrap">
+            <button type="button" class="dd-btn" id="pmi-pp-btn" onclick="ddToggle('pmi-pp-panel')"><span>Todos</span><span>▾</span></button>
+            <div class="dd-panel" id="pmi-pp-panel">
+              <div class="dd-actions"><button type="button" class="btn-popup" onclick="ddSetAll('pmi-pp-panel',true);ddLabel('pmi-pp-panel','pmi-pp-btn','Todos');renderPMIAll();">Todos</button><button type="button" class="btn-popup" onclick="ddSetAll('pmi-pp-panel',false);ddLabel('pmi-pp-panel','pmi-pp-btn','Todos');renderPMIAll();">Ninguno</button></div>
+              ${ppOpts.map(pp=>`<label class="dd-item"><input type="checkbox" value="${pp}" checked onchange="ddLabel('pmi-pp-panel','pmi-pp-btn','Todos');renderPMIAll();">S${pp}</label>`).join('')}
+            </div>
+          </div>
+        </div>
+        <div class="fg">
+          <label>Dispatch Date</label>
+          <div class="dd-wrap">
+            <button type="button" class="dd-btn" id="pmi-dd-btn" onclick="ddToggle('pmi-dd-panel')"><span>Todos</span><span>▾</span></button>
+            <div class="dd-panel" id="pmi-dd-panel">
+              <div class="dd-actions"><button type="button" class="btn-popup" onclick="ddSetAll('pmi-dd-panel',true);ddLabel('pmi-dd-panel','pmi-dd-btn','Todos');renderPMIAll();">Todos</button><button type="button" class="btn-popup" onclick="ddSetAll('pmi-dd-panel',false);ddLabel('pmi-dd-panel','pmi-dd-btn','Todos');renderPMIAll();">Ninguno</button></div>
+              ${ddOpts.map(d=>`<label class="dd-item"><input type="checkbox" value="${d}" checked onchange="ddLabel('pmi-dd-panel','pmi-dd-btn','Todos');renderPMIAll();">${d}</label>`).join('')}
+              ${ddHasBlank?`<label class="dd-item"><input type="checkbox" value="" checked onchange="ddLabel('pmi-dd-panel','pmi-dd-btn','Todos');renderPMIAll();">(vacío)</label>`:''}
+            </div>
+          </div>
+        </div>
+        <div class="fg">
+          <label>Modo</label>
+          <div class="dd-wrap">
+            <button type="button" class="dd-btn" id="pmi-mo-btn" onclick="ddToggle('pmi-mo-panel')"><span>Todos</span><span>▾</span></button>
+            <div class="dd-panel" id="pmi-mo-panel">
+              <div class="dd-actions"><button type="button" class="btn-popup" onclick="ddSetAll('pmi-mo-panel',true);ddLabel('pmi-mo-panel','pmi-mo-btn','Todos');renderPMIAll();">Todos</button><button type="button" class="btn-popup" onclick="ddSetAll('pmi-mo-panel',false);ddLabel('pmi-mo-panel','pmi-mo-btn','Todos');renderPMIAll();">Ninguno</button></div>
+              ${['Aéreo','Marítimo','Terrestre'].map(m=>`<label class="dd-item"><input type="checkbox" value="${m}" checked onchange="ddLabel('pmi-mo-panel','pmi-mo-btn','Todos');renderPMIAll();">${m==='Aéreo'?'✈':m==='Marítimo'?'⚓':'🛣️'} ${m}</label>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="pmi-kpis"></div>
+    </div>
+    <div class="sec-title">🌿 SENASA PROGRAM</div>
+    <div class="card">
+      <div class="ct">Inspection Time por Inspector <span class="sub" id="sn-stat"></span></div>
+      <div class="filter-bar">
+        <div class="fg"><label>Assigned Inspector</label><select id="sn-in"><option value="ALL">Todos</option>${inspectors.map(i=>`<option value="${i}">${i}</option>`).join('')}</select></div>
+      </div>
+      <div class="pivot-wrap"><div class="pivot-scroll" style="max-height:560px;"><table class="senasa"><thead id="sn-head"></thead><tbody id="sn-body"></tbody></table></div></div>
+    </div>
+    <div class="sec-title">🚦 DISPATCH CONTROL</div>
+    <div class="card">
+      <div class="ct">Rondas de despacho <span class="sub" id="emb-stat"></span></div>
+      <div class="pivot-wrap"><div class="pivot-scroll" style="max-height:560px;"><table class="pivot" style="font-size:10.5px;"><colgroup><col style="width:34px"><col style="width:78px"><col style="width:70px"><col style="width:78px"><col style="width:90px"><col style="width:90px"><col style="width:90px"><col style="width:80px"><col style="width:90px"><col style="width:64px"><col style="width:90px"><col style="width:90px"><col style="width:90px"><col style="width:90px"><col style="width:70px"><col style="width:60px"><col style="width:80px"></colgroup><thead><tr><th>Dispatch Ro.</th><th>Loading Date</th><th>Loading Time</th><th>Positioning Time</th><th>Packing Stage Estim..</th><th>Journey Status BASC</th><th>Packing Stage Load Status</th><th>Instruction</th><th>PO</th><th>Line</th><th>Logistics Operator</th><th>Transport Operator</th><th>Booking|AWB|CRT</th><th>Container</th><th>POD</th><th>Packing</th><th>Gate-In Storage</th></tr></thead><tbody id="emb-body"></tbody></table></div></div>
+    </div>
+    <div class="sec-title">T.R. PROGRAM</div>
+    <div class="card">
+      <div class="ct">Programa de Técnicos Reefer <span class="sub" id="tr-stat"></span></div>
+      <div class="filter-bar">
+        <div class="fg"><label>Line</label><select id="tr-ln"><option value="ALL">Todos</option>${trLns.map(l=>`<option value="${l}">${l}</option>`).join('')}</select></div>
+        <div class="fg">
+          <label>T.R. Time</label>
+          <div class="dd-wrap">
+            <button type="button" class="dd-btn" id="tr-tt-btn" onclick="ddToggle('tr-tt-panel')"><span>Todos</span><span>▾</span></button>
+            <div class="dd-panel" id="tr-tt-panel">
+              <div class="dd-actions"><button type="button" class="btn-popup" onclick="ddSetAll('tr-tt-panel',true);ddLabel('tr-tt-panel','tr-tt-btn','Todos');renderPMIAll();">Todos</button><button type="button" class="btn-popup" onclick="ddSetAll('tr-tt-panel',false);ddLabel('tr-tt-panel','tr-tt-btn','Todos');renderPMIAll();">Ninguno</button></div>
+              ${trTimes.map(t=>`<label class="dd-item"><input type="checkbox" value="${t}" checked onchange="ddLabel('tr-tt-panel','tr-tt-btn','Todos');renderPMIAll();">${t}</label>`).join('')}
+              ${trHasBlank?`<label class="dd-item"><input type="checkbox" value="" checked onchange="ddLabel('tr-tt-panel','tr-tt-btn','Todos');renderPMIAll();">(vacío)</label>`:''}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="pivot-wrap"><div class="pivot-scroll" style="max-height:560px;"><table class="pivot"><thead><tr><th>Packing</th><th>Logistics Operator</th><th>SENASA Attention</th><th>Line</th><th>Dispatch Date</th><th>Inspection Time</th><th>T.R. Time</th><th>Assigned T.R.</th><th>Booking|AW..</th><th>Assigned Inspector</th></tr></thead><tbody id="tr-body"></tbody></table></div></div>
+    </div>
+  </section>`);
+  setTimeout(()=>{
+    renderPMIAll();
+    ['pmi-pk','sn-in','tr-ln'].forEach(id=>document.getElementById(id).addEventListener('change',renderPMIAll));
+  },50);
+}
+
+function renderPMIAll(){
+  const selPK=document.getElementById('pmi-pk').value;
+  const selPPs=ddChecked('pmi-pp-panel').map(v=>+v);
+  const selDD=ddChecked('pmi-dd-panel');
+  const selMO=ddChecked('pmi-mo-panel');
+  const ddTotal=document.querySelectorAll('#pmi-dd-panel input').length;
+  const moTotal=document.querySelectorAll('#pmi-mo-panel input').length;
+  document.getElementById('pmi-stat').textContent=`Packing: ${selPK==='ALL'?'Todos':selPK} · Pack Plan: ${selPPs.length}/${document.querySelectorAll('#pmi-pp-panel input').length} sel. · Dispatch: ${selDD.length}/${ddTotal} sel. · Modo: ${selMO.length}/${moTotal} sel.`;
+  renderSenasa(selPK,selPPs,selDD,selMO);
+  renderEmbarques(selPK,selPPs,selDD,selMO);
+  renderTR(selPK,selPPs,selDD,selMO);
+  renderPMIKPIs(selPK,selPPs,selDD,selMO);
+}
+
+function renderPMIKPIs(gPK,gPPs,gDD,gMO){
+  let ft=EMBARQUES;
+  if(gPK&&gPK!=='ALL')ft=ft.filter(r=>r.packing===gPK);
+  if(gPPs&&gPPs.length)ft=ft.filter(r=>gPPs.includes(r.pack_plan));
+  if(gDD&&gDD.length)ft=ft.filter(r=>gDD.includes(r.dispatch_date||''));
+  if(gMO&&gMO.length)ft=ft.filter(r=>gMO.includes(r.mode));
+  const modeMeta={'Aéreo':{ic:'✈',c:'#2E8FB0'},'Marítimo':{ic:'⚓',c:'#163B54'},'Terrestre':{ic:'🚚',c:'#7A6FD0'}};
+  const modes=Object.keys(modeMeta);
+  const byMode=modes.map(m=>{const sub=ft.filter(r=>r.mode===m);return{mode:m,fcl:sub.reduce((a,r)=>a+r.fcl,0),po:new Set(sub.filter(r=>r.po).map(r=>r.po)).size};});
+  const bascGroups={};
+  ft.forEach(r=>{const b=r.basc||'(sin estado)';bascGroups[b]=(bascGroups[b]||0)+r.fcl;});
+  const bascRows=Object.entries(bascGroups).sort((a,b)=>b[1]-a[1]);
+  const bascMax=Math.max(...bascRows.map(r=>r[1]),1);
+  const totalFcl=ft.reduce((a,r)=>a+r.fcl,0);
+  const citaFcl=ft.filter(r=>r.retiro_cita).reduce((a,r)=>a+r.fcl,0);
+  const loadFcl=ft.filter(r=>r.load_status==='CARGADO').reduce((a,r)=>a+r.fcl,0);
+  const citaPct=totalFcl>0?citaFcl/totalFcl*100:0,loadPct=totalFcl>0?loadFcl/totalFcl*100:0;
+  const ring=(pct,col)=>{const r=22,c=2*Math.PI*r,off=c-(pct/100)*c;return`<svg width="52" height="52" viewBox="0 0 52 52" style="flex-shrink:0;"><circle cx="26" cy="26" r="${r}" fill="none" stroke="var(--line)" stroke-width="5"/><circle cx="26" cy="26" r="${r}" fill="none" stroke="${col}" stroke-width="5" stroke-linecap="round" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}" transform="rotate(-90 26 26)"/></svg>`;};
+  const modeRows=byMode.map(m=>`<div class="pmi-mode-row"><div class="pmi-mode-lbl" style="--mc:${modeMeta[m.mode].c};"><span class="pmi-mode-ic">${modeMeta[m.mode].ic}</span>${m.mode}</div><div class="pmi-mode-val">${m.po}<span class="pmi-mode-sub">(${f1(m.fcl)} FCL)</span></div></div>`).join('');
+  const bascRowsHtml=bascRows.map(([b,v])=>`<div class="pmi-basc-row"><div class="pmi-basc-lbl">${b}</div><div class="pmi-basc-bar-wrap"><div class="pmi-basc-bar" style="width:${(v/bascMax*100).toFixed(1)}%;"></div></div><div class="pmi-basc-val">${f1(v)}</div></div>`).join('');
+  document.getElementById('pmi-kpis').innerHTML=`
+    <div class="pmi-kpi-zone">
+      <div class="pmi-kpi-col" style="min-width:230px;">
+        <div class="pmi-kpi-h">Modo · PO diferenciados <span class="pmi-kpi-h-sub">(Σ FCL)</span></div>
+        <div class="pmi-mode-tbl">${modeRows}</div>
+      </div>
+      <div class="pmi-kpi-col" style="flex:1;min-width:260px;">
+        <div class="pmi-kpi-h">Σ FCL por Journey Status BASC</div>
+        <div class="pmi-basc-list">${bascRowsHtml}</div>
+      </div>
+      <div class="pmi-kpi-col" style="min-width:280px;">
+        <div class="pmi-kpi-h">Cobertura</div>
+        <div style="display:flex;gap:14px;">
+          <div class="pmi-ring-card">${ring(citaPct,'#2E8B57')}<div><div class="pmi-ring-t">Cita de retiro</div><div class="pmi-ring-v">${f1(citaFcl)}<span class="pmi-ring-u"> / ${f1(totalFcl)}</span></div><div class="pmi-ring-p" style="color:#2E8B57;">${totalFcl>0?fp(citaPct):'—'}</div></div></div>
+          <div class="pmi-ring-card">${ring(loadPct,'#E8A33D')}<div><div class="pmi-ring-t">Cargados</div><div class="pmi-ring-v">${f1(loadFcl)}<span class="pmi-ring-u"> / ${f1(totalFcl)}</span></div><div class="pmi-ring-p" style="color:#E8A33D;">${totalFcl>0?fp(loadPct):'—'}</div></div></div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderTR(gPK,gPPs,gDD,gMO){
+  const selLN=document.getElementById('tr-ln').value;
+  const selTTs=ddChecked('tr-tt-panel');
+  let ft=TR_PROGRAM;
+  if(gPK&&gPK!=='ALL')ft=ft.filter(r=>r.packing===gPK);
+  if(gPPs&&gPPs.length)ft=ft.filter(r=>gPPs.includes(r.pack_plan));
+  if(gDD&&gDD.length)ft=ft.filter(r=>gDD.includes(r.dispatch_date||''));
+  if(gMO&&gMO.length)ft=ft.filter(r=>gMO.includes(r.mode));
+  if(selLN!=='ALL')ft=ft.filter(r=>r.line===selLN);
+  ft=ft.filter(r=>selTTs.includes(r.tr_time||''));
+  const pkGroups={};
+  ft.forEach(r=>{const pk=r.packing||'(en blanco)';if(!pkGroups[pk])pkGroups[pk]={};const ln=r.line||'(en blanco)';if(!pkGroups[pk][ln])pkGroups[pk][ln]=[];pkGroups[pk][ln].push(r);});
+  let html='',rows=0;
+  Object.keys(pkGroups).sort().forEach(pk=>{
+    const lnMap=pkGroups[pk];
+    let pkRowCount=0;Object.values(lnMap).forEach(recs=>pkRowCount+=recs.length);
+    let pkFirst=true;
+    Object.keys(lnMap).sort().forEach(ln=>{
+      const recs=lnMap[ln];
+      recs.forEach((r,i)=>{
+        rows++;
+        html+=`<tr>${pkFirst?`<td rowspan="${pkRowCount}" style="background:#163B54;color:#fff;font-weight:700;text-align:center;vertical-align:middle;">${pk}</td><td rowspan="${pkRowCount}" style="vertical-align:middle;">${r.log_op||'—'}</td><td rowspan="${pkRowCount}" style="vertical-align:middle;">${r.senasa_att||'—'}</td>`:''}${i===0?`<td rowspan="${recs.length}" style="vertical-align:middle;font-weight:600;">${ln}</td>`:''}<td class="mono">${r.dispatch_date||'—'}</td><td class="mono">${r.insp_time||'—'}</td><td class="mono">${r.tr_time||'—'}</td><td>${r.assigned_tr||'—'}</td><td class="mono">${r.booking||'—'}</td><td>${r.inspector||'—'}</td></tr>`;
+        pkFirst=false;
+      });
+    });
+  });
+  document.getElementById('tr-body').innerHTML=html||'<tr><td colspan="10" style="text-align:center;color:var(--mu);padding:16px;">Sin registros para este filtro</td></tr>';
+  document.getElementById('tr-stat').textContent=`${rows} filas`;
+}
+
+function renderEmbarques(gPK,gPPs,gDD,gMO){
+  let ft=EMBARQUES;
+  if(gPK&&gPK!=='ALL')ft=ft.filter(r=>r.packing===gPK);
+  if(gPPs&&gPPs.length)ft=ft.filter(r=>gPPs.includes(r.pack_plan));
+  if(gDD&&gDD.length)ft=ft.filter(r=>gDD.includes(r.dispatch_date||''));
+  if(gMO&&gMO.length)ft=ft.filter(r=>gMO.includes(r.mode));
+  const rndGroups={};
+  ft.forEach(r=>{const rnd=r.round;if(!rndGroups[rnd])rndGroups[rnd]=[];rndGroups[rnd].push(r);});
+  const bascCl=b=>b==='FINALIZADO'?'ok':(b&&(b.includes('PACKING')||b.includes('RUTA')))?'warn':b?'bad':'neu';
+  let html='',rows=0;
+  Object.keys(rndGroups).sort().forEach(rnd=>{
+    const recs=rndGroups[rnd];
+    recs.forEach((r,i)=>{
+      rows++;
+      html+=`<tr>${i===0?`<td rowspan="${recs.length}" style="background:#E8F4F8;font-weight:700;border-right:2px solid var(--sky);vertical-align:middle;text-align:center;writing-mode:vertical-rl;text-orientation:mixed;">${rnd}</td>`:''}<td class="mono">${r.load_date||'—'}</td><td class="mono">${r.load_time||'—'}</td><td class="mono">${r.postime||'—'}</td><td class="mono">${r.pack_est||'—'}</td><td><span class="pill ${bascCl(r.basc)}" style="font-size:9px;">${r.basc||'—'}</span></td><td>${r.load_status||'—'}</td><td class="mono">${r.instruction||'—'}</td><td class="mono">${r.po||'—'}</td><td>${r.line||'—'}</td><td>${r.log_op||'—'}</td><td>${r.transp_op||'—'}</td><td class="mono">${r.booking||'—'}</td><td class="mono">${r.container||'—'}</td><td>${r.pod||'—'}</td><td>${r.packing||'—'}</td><td>${r.gatein||'—'}</td></tr>`;
+    });
+  });
+  document.getElementById('emb-body').innerHTML=html||'<tr><td colspan="16" style="text-align:center;color:var(--mu);padding:16px;">Sin registros para este filtro</td></tr>';
+  document.getElementById('emb-stat').textContent=`${rows} filas · ${Object.keys(rndGroups).length} ronda(s)`;
+}
+
+function renderSenasa(gPK,gPPs,gDD,gMO){
+  const selIN=document.getElementById('sn-in').value;
+  let ft=SENASA;
+  if(gPK&&gPK!=='ALL')ft=ft.filter(r=>r.packing===gPK);
+  if(gPPs&&gPPs.length)ft=ft.filter(r=>gPPs.includes(r.pack_plan));
+  if(gDD&&gDD.length)ft=ft.filter(r=>gDD.includes(r.dispatch_date||''));
+  if(gMO&&gMO.length)ft=ft.filter(r=>gMO.includes(r.mode));
+  if(selIN!=='ALL')ft=ft.filter(r=>r.inspector===selIN);
+
+  // Columns = unique inspection times (sorted)
+  const allTimes=[...new Set(ft.map(r=>r.insp_time).filter(Boolean))].sort();
+  const hasST=ft.some(r=>!r.insp_time),cols=[...allTimes,...(hasST?['']:[])];
+
+  // Build cell data: key = packing|insp_date|mode|pod|senasa_att → time → COUNT of distinct PO (pedidos)
+  const cell={},cellPO={},pkSet=new Set(),dateByPk={},modeByPkDate={},podByPkDateMode={},attByPkDateModePod={};
+  ft.forEach((r,ridx)=>{
+    const dk=r.insp_date||'',pk=r.packing;
+    const key=`${pk}||${dk}||${r.mode}||${r.pod}||${r.senasa_att}`;
+    const tk=r.insp_time||'';
+    if(!cellPO[key])cellPO[key]={};
+    if(!cellPO[key][tk])cellPO[key][tk]=new Set();
+    cellPO[key][tk].add(r.po||('__row'+ridx));
+    pkSet.add(pk);
+    if(!dateByPk[pk])dateByPk[pk]=new Set();dateByPk[pk].add(dk);
+    const pdKey=`${pk}||${dk}`;
+    if(!modeByPkDate[pdKey])modeByPkDate[pdKey]=new Set();modeByPkDate[pdKey].add(r.mode);
+    const pdmKey=`${pk}||${dk}||${r.mode}`;
+    if(!podByPkDateMode[pdmKey])podByPkDateMode[pdmKey]=new Set();podByPkDateMode[pdmKey].add(r.pod);
+    const pdmpKey=`${pk}||${dk}||${r.mode}||${r.pod}`;
+    if(!attByPkDateModePod[pdmpKey])attByPkDateModePod[pdmpKey]=new Set();attByPkDateModePod[pdmpKey].add(r.senasa_att);
+  });
+
+  const packings=[...pkSet].sort();
+  const mO=['Aéreo','Marítimo','Terrestre'];
+  const mIcon=m=>m==='Aéreo'?'✈':m==='Marítimo'?'⚓':'🛣️',mCls=m=>m==='Aéreo'?'mA':m==='Marítimo'?'mM':'mT';
+
+  document.getElementById('sn-head').innerHTML=`<tr>
+    <th>Packing</th><th>Loading Date</th><th>Mode</th><th>POD</th><th>SENASA Att.</th>
+    ${cols.map(t=>`<th class="time-h">${t||'Sin hora'}</th>`).join('')}
+    <th class="tot-h">Total</th>
+  </tr>`;
+
+  const gt={};cols.forEach(t=>{gt[t]=0;});gt['__t']=0;
+  let html='';
+  packings.forEach(pk=>{
+    const dates=[...dateByPk[pk]].sort();
+    const pkT={};cols.forEach(t=>{pkT[t]=0;});pkT['__t']=0;
+    let pkRows=0;
+
+    dates.forEach(dk=>{
+      const pdKey=`${pk}||${dk}`;
+      const dateT={};cols.forEach(t=>{dateT[t]=0;});dateT['__t']=0;
+      const modes=[...modeByPkDate[pdKey]].sort((a,b)=>mO.indexOf(a)-mO.indexOf(b));
+      let dateRows=0;
+
+      modes.forEach(mode=>{
+        const pdmKey=`${pk}||${dk}||${mode}`,pods=[...podByPkDateMode[pdmKey]].sort();
+        pods.forEach(pod=>{
+          const pdmpKey=`${pk}||${dk}||${mode}||${pod}`,atts=[...attByPkDateModePod[pdmpKey]].sort();
+          atts.forEach((att,ai)=>{
+            const key=`${pk}||${dk}||${mode}||${pod}||${att}`,data=cellPO[key]||{};
+            let rt=0;
+            const cells=cols.map(t=>{const v=data[t]?data[t].size:0;pkT[t]+=v;gt[t]+=v;dateT[t]+=v;rt+=v;return v>0?`<td class="tv">${v}</td>`:`<td class="tz">·</td>`;}).join('');
+            pkT['__t']+=rt;gt['__t']+=rt;dateT['__t']+=rt;
+            const attBadge=att==='PA'?`<span class="att-pa">PA</span>`:`<span class="att-sn">SENASA</span>`;
+            const showPk=pkRows===0,showDate=dateRows===0&&pods.indexOf(pod)===0&&atts.indexOf(att)===0,showMode=pods.indexOf(pod)===0&&atts.indexOf(att)===0,showPod=atts.indexOf(att)===0;
+            html+=`<tr>
+              ${showPk?`<td rowspan="PKSP2_${pk}" style="background:#E8F4F8;font-weight:700;border-right:2px solid var(--sky);vertical-align:top;padding-top:8px;">${pk}</td>`:''}
+              ${showDate?`<td rowspan="DTSP_${pk}_${dk.replace(/-/g,'')}" style="vertical-align:top;padding-top:7px;font-family:'JetBrains Mono',monospace;font-size:10px;">${dk?fmtDate(dk):'Sin fecha'}</td>`:''}
+              ${showMode?`<td rowspan="MDSP2_${pk}_${dk.replace(/-/g,'')}_${mode}" style="vertical-align:top;padding-top:7px;"><span class="mode-badge ${mCls(mode)}">${mIcon(mode)} ${mode}</span></td>`:''}
+              ${showPod?`<td rowspan="${atts.length}" style="vertical-align:top;padding-top:7px;">${pod}</td>`:''}
+              <td>${attBadge}</td>
+              ${cells}
+              <td class="tot-v">${rt}</td>
+            </tr>`;
+            pkRows++;dateRows++;
+          });
+        });
+      });
+      // Date subtotal
+      html+=`<tr class="date-total"><td colspan="4">Total ${dk?fmtDate(dk):'Sin fecha'}</td>${cols.map(t=>dateT[t]>0?`<td class="tv">${dateT[t]}</td>`:`<td class="tz">·</td>`).join('')}<td class="tot-v">${dateT['__t']}</td></tr>`;
+    });
+  });
+  // Grand total
+  html+=`<tr class="grand-total"><td colspan="5">Total general</td>${cols.map(t=>gt[t]>0?`<td class="tv">${gt[t]}</td>`:`<td class="tz" style="color:#666;">·</td>`).join('')}<td class="tot-v">${gt['__t']}</td></tr>`;
+  document.getElementById('sn-body').innerHTML=html;
+
+  // Fix rowspans
+  packings.forEach(pk=>{
+    document.querySelectorAll(`td[rowspan="PKSP2_${pk}"]`).forEach(td=>{
+      let n=0;
+      const dates=[...dateByPk[pk]].sort();
+      dates.forEach(dk=>{
+        const pdKey=`${pk}||${dk}`;
+        [...modeByPkDate[pdKey]].sort((a,b)=>mO.indexOf(a)-mO.indexOf(b)).forEach(mode=>{
+          const pdmKey=`${pk}||${dk}||${mode}`;
+          [...podByPkDateMode[pdmKey]].sort().forEach(pod=>{
+            n+=[...attByPkDateModePod[`${pk}||${dk}||${mode}||${pod}`]].length;
+          });
+        });
+        n++; // date total row
+      });
+      td.setAttribute('rowspan',n);
+    });
+    const dates=[...dateByPk[pk]].sort();
+    dates.forEach(dk=>{
+      const dtKey=dk.replace(/-/g,'');
+      document.querySelectorAll(`td[rowspan="DTSP_${pk}_${dtKey}"]`).forEach(td=>{
+        let n=0;const pdKey=`${pk}||${dk}`;
+        [...modeByPkDate[pdKey]].sort((a,b)=>mO.indexOf(a)-mO.indexOf(b)).forEach(mode=>{
+          const pdmKey=`${pk}||${dk}||${mode}`;
+          [...podByPkDateMode[pdmKey]].sort().forEach(pod=>{n+=[...attByPkDateModePod[`${pk}||${dk}||${mode}||${pod}`]].length;});
+        });
+        td.setAttribute('rowspan',n);
+      });
+      const pdKey=`${pk}||${dk}`;
+      [...modeByPkDate[pdKey]].sort((a,b)=>mO.indexOf(a)-mO.indexOf(b)).forEach(mode=>{
+        const mdKey=`${dtKey}_${mode}`;
+        document.querySelectorAll(`td[rowspan="MDSP2_${pk}_${mdKey}"]`).forEach(td=>{
+          let n=0;const pdmKey=`${pk}||${dk}||${mode}`;
+          [...podByPkDateMode[pdmKey]].sort().forEach(pod=>{n+=[...attByPkDateModePod[`${pk}||${dk}||${mode}||${pod}`]].length;});
+          td.setAttribute('rowspan',n);
+        });
+      });
+    });
+  });
+  document.getElementById('sn-stat').textContent=`${ft.length} filas · ${f1(gt['__t'])} FCL`;
+}
+
+// ══════════════════════════════════════════════════════════════
+// 07 KPI TRACKER
+// ══════════════════════════════════════════════════════════════
+function bKPI(){
+  const k=KPI,ex=EX;
+  const br=(lbl,val,max,color,disp)=>`<div class="br" style="grid-template-columns:88px 1fr 60px;"><div class="lbl">${lbl}</div><div class="bt"><div class="bf" style="width:${(val/max*100).toFixed(1)}%;background:${color}"></div></div><div class="bv">${disp}</div></div>`;
+  main.insertAdjacentHTML('beforeend',`<section class="panel" id="p-kpi">
+    <div class="ph"><div class="ey">07 · Indicadores clave</div><div class="pt">KPI Tracker</div></div>
+    <div class="hero-kpis"><div class="hc" style="background:linear-gradient(135deg,#163B54,#0E2A3D)"><div class="hl">🎯 Confirmación</div><div class="hv">${fp(k.tasa_conf)}</div><div class="hs">${k.confirmados} de ${k.total_recs}</div></div><div class="hc" style="background:linear-gradient(135deg,#C0392B,#922119)"><div class="hl">❌ Cancelación</div><div class="hv">${fp(k.tasa_canc)}</div><div class="hs">${k.cancelados} cancelados</div></div><div class="hc" style="background:linear-gradient(135deg,#2E8FB0,#1F6E8C)"><div class="hl">🚢 Share marítimo</div><div class="hv">${fp(k.share_mar)}</div><div class="hs">del FCL confirmado</div></div><div class="hc" style="background:linear-gradient(135deg,#E8A33D,#C77D1E)"><div class="hl">✈ Share aéreo</div><div class="hv">${fp(k.share_aer)}</div><div class="hs">del FCL confirmado</div></div><div class="hc" style="background:linear-gradient(135deg,#2E8B57,#1F6240)"><div class="hl">📄 Cobertura DAM</div><div class="hv">${fp(k.cob_dam)}</div><div class="hs">conf. con DAM</div></div></div>
+    <div class="g2"><div class="card"><div class="ct">Por status</div><div class="bars">${br('Confirmado',k.confirmados,k.total_recs,'#2E8FB0',k.confirmados)}${br('Proyectado',k.proyectados,k.total_recs,'#D7CDB0',k.proyectados)}${br('Cancelado',k.cancelados,k.total_recs,'#C0392B',k.cancelados)}</div></div><div class="card"><div class="ct">Share FCL</div><div class="bars">${br('Marítimo',k.share_mar,100,'#163B54',fp(k.share_mar))}${br('Aéreo',k.share_aer,100,'#2E8FB0',fp(k.share_aer))}${br('Terrestre',100-k.share_mar-k.share_aer,100,'#7A6FD0',fp(100-k.share_mar-k.share_aer))}</div></div></div>
+    <div class="card"><div class="ct">KPIs por modo</div><div class="tbl-wrap"><table class="std"><thead><tr><th>KPI</th><th style="text-align:right">Aéreo</th><th style="text-align:right">Marítimo</th><th style="text-align:right">Terrestre</th><th style="text-align:right">Total</th></tr></thead><tbody><tr><td>Registros conf.</td><td class="num">85</td><td class="num">86</td><td class="num">8</td><td class="num" style="font-weight:700">179</td></tr><tr><td>FCL confirmado</td><td class="num">${f1(ex.fcl_aereo)}</td><td class="num">${f1(ex.fcl_maritimo)}</td><td class="num">${f1(ex.fcl_terrestre)}</td><td class="num" style="font-weight:700">${f1(ex.total_fcl)}</td></tr><tr><td>DAMs únicas</td><td class="num">74</td><td class="num">38</td><td class="num">8</td><td class="num" style="font-weight:700">${ex.dam_unique}</td></tr></tbody></table></div></div>
+  </section>`);
+}
+
+// ══════════════════════════════════════════════════════════════
+// 08 DESTINOS & RUTAS
+// ══════════════════════════════════════════════════════════════
+function bRutas(){
+  const mxD=Math.max(...DEST.map(d=>d.fcl)),mxL=Math.max(...LINEAS.map(l=>l.fcl));
+  main.insertAdjacentHTML('beforeend',`<section class="panel" id="p-rutas">
+    <div class="ph"><div class="ey">08 · Geografía</div><div class="pt">Destinos & Rutas</div></div>
+    <div class="g2"><div class="card"><div class="ct">Top 10 destinos</div><div class="bars">${DEST.map((d,i)=>`<div class="br" style="grid-template-columns:90px 1fr 52px;"><div class="lbl">${d.port}</div><div class="bt"><div class="bf" style="width:${(d.fcl/mxD*100).toFixed(1)}%;background:${i<3?'#E8A33D':'#163B54'}"></div></div><div class="bv">${f1(d.fcl)}</div></div>`).join('')}</div></div><div class="card"><div class="ct">FCL por línea naviera</div><div class="bars">${LINEAS.map(l=>`<div class="br" style="grid-template-columns:76px 1fr 52px;"><div class="lbl">${l.line}</div><div class="bt"><div class="bf" style="width:${(l.fcl/mxL*100).toFixed(1)}%;background:#2E8FB0"></div></div><div class="bv">${f1(l.fcl)}</div></div>`).join('')}</div></div></div>
+  </section>`);
+}
+
+bFcast();bPorts();bWeekly();bPMI();bAir();bExec();bKPI();bRutas();
+
+}
+</script>
+</body>
+</html>
