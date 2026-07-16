@@ -189,6 +189,7 @@ table.senasa tr.date-total:hover td,table.senasa tr.grand-total:hover td{backgro
 .addon{display:inline-flex;align-items:center;gap:2px;font-size:9px;font-weight:700;padding:1px 5px;border-radius:4px;margin-left:4px;}
 .aup{background:#E5F3EA;color:#2E8B57;}.adn{background:#FBE5E1;color:#C0392B;}
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 <div class="topbar">
@@ -253,6 +254,7 @@ window.renderAirAll=(...a)=>renderAirAll(...a);
 window.renderPMIAll=(...a)=>renderPMIAll(...a);
 window.renderPorts=(...a)=>renderPorts(...a);
 window.renderWeekly=(...a)=>renderWeekly(...a);
+window.downloadEmbarquesExcel=(...a)=>downloadEmbarquesExcel(...a);
 const tabBar=document.getElementById('tabBar');
 const VISIBLE_TABS = TABS;
 VISIBLE_TABS.forEach((t,i)=>{
@@ -840,7 +842,10 @@ function bPMI(){
     </div>
     <div class="sec-title">🚦 DISPATCH CONTROL</div>
     <div class="card">
-      <div class="ct">Rondas de despacho <span class="sub" id="emb-stat"></span></div>
+      <div class="ct" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>Rondas de despacho <span class="sub" id="emb-stat"></span></span>
+        <button type="button" class="btn-popup" style="font-size:10.5px;padding:5px 10px;" onclick="downloadEmbarquesExcel()">⬇ Descargar Excel</button>
+      </div>
       <div class="pivot-wrap"><div class="pivot-scroll" style="max-height:560px;"><table class="pivot" style="font-size:10.5px;"><colgroup><col style="width:34px"><col style="width:78px"><col style="width:70px"><col style="width:78px"><col style="width:90px"><col style="width:90px"><col style="width:90px"><col style="width:80px"><col style="width:90px"><col style="width:64px"><col style="width:90px"><col style="width:90px"><col style="width:90px"><col style="width:90px"><col style="width:70px"><col style="width:60px"><col style="width:80px"></colgroup><thead><tr><th>Dispatch Ro.</th><th>Loading Date</th><th>Loading Time</th><th>Positioning Time</th><th>Packing Stage Estim..</th><th>Journey Status BASC</th><th>Packing Stage Load Status</th><th>Instruction</th><th>PO</th><th>Line</th><th>Logistics Operator</th><th>Transport Operator</th><th>Booking|AWB|CRT</th><th>Container</th><th>POD</th><th>Packing</th><th>Gate-In Storage</th></tr></thead><tbody id="emb-body"></tbody></table></div></div>
     </div>
     <div class="sec-title">T.R. PROGRAM</div>
@@ -959,6 +964,7 @@ function renderEmbarques(gPK,gPPs,gDD,gMO){
   if(gPPs&&gPPs.length)ft=ft.filter(r=>gPPs.includes(r.pack_plan));
   if(gDD&&gDD.length)ft=ft.filter(r=>gDD.includes(r.dispatch_date||''));
   if(gMO&&gMO.length)ft=ft.filter(r=>gMO.includes(r.mode));
+  LAST_EMBARQUES_FILTERED = ft;
   const rndGroups={};
   ft.forEach(r=>{const rnd=r.round;if(!rndGroups[rnd])rndGroups[rnd]=[];rndGroups[rnd].push(r);});
   const bascCl=b=>b==='FINALIZADO'?'ok':(b&&(b.includes('PACKING')||b.includes('RUTA')))?'warn':b?'bad':'neu';
@@ -972,6 +978,25 @@ function renderEmbarques(gPK,gPPs,gDD,gMO){
   });
   document.getElementById('emb-body').innerHTML=html||'<tr><td colspan="16" style="text-align:center;color:var(--mu);padding:16px;">Sin registros para este filtro</td></tr>';
   document.getElementById('emb-stat').textContent=`${rows} filas · ${Object.keys(rndGroups).length} ronda(s)`;
+}
+
+let LAST_EMBARQUES_FILTERED = [];
+function downloadEmbarquesExcel(){
+  if(!LAST_EMBARQUES_FILTERED.length){alert('No hay registros para exportar con el filtro actual.');return;}
+  const rows = LAST_EMBARQUES_FILTERED.map(r=>({
+    'Dispatch Round': r.round, 'Loading Date': r.load_date, 'Loading Time': r.load_time,
+    'Positioning Time': r.postime, 'Packing Stage Estim.': r.pack_est, 'Journey Status BASC': r.basc,
+    'Packing Stage Load Status': r.load_status, 'Instruction': r.instruction, 'PO': r.po,
+    'Line': r.line, 'Logistics Operator': r.log_op, 'Transport Operator': r.transp_op,
+    'Booking|AWB|CRT': r.booking, 'Container': r.container, 'POD': r.pod, 'Packing': r.packing,
+    'Gate-In Storage': r.gatein, 'Pack Plan': r.pack_plan, 'Dispatch Date': r.dispatch_date, 'Mode': r.mode,
+  }));
+  const ws = XLSX.utils.json_to_sheet(rows);
+  ws['!cols'] = Object.keys(rows[0]).map(k => ({wch: Math.max(k.length, 14)}));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Dispatch Control');
+  const stamp = new Date().toISOString().slice(0,10);
+  XLSX.writeFile(wb, `Dispatch_Control_${stamp}.xlsx`);
 }
 
 function renderSenasa(gPK,gPPs,gDD,gMO){
