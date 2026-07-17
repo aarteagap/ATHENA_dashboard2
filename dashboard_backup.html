@@ -255,6 +255,7 @@ window.renderPMIAll=(...a)=>renderPMIAll(...a);
 window.renderPorts=(...a)=>renderPorts(...a);
 window.renderWeekly=(...a)=>renderWeekly(...a);
 window.downloadEmbarquesExcel=(...a)=>downloadEmbarquesExcel(...a);
+window.doUpload=(...a)=>doUpload(...a);
 const tabBar=document.getElementById('tabBar');
 const VISIBLE_TABS = TABS;
 VISIBLE_TABS.forEach((t,i)=>{
@@ -332,16 +333,21 @@ function buildChart(wks,sid,metric){
 function attachChart(sid,wks,metric){
   metric=metric||'fcl';
   const kC=metric==='fcl'?'fcl_conf':'pal_conf',kP=metric==='fcl'?'fcl_proj':'pal_proj',kA=metric==='fcl'?'fcl_addon':'pal_addon';
+  const kAdd=metric==='fcl'?'fcl_add':'pal_add',kExpo=metric==='fcl'?'fcl_expo':'pal_expo',kExadd=metric==='fcl'?'fcl_exadd':'pal_exadd';
   const unitLbl=metric==='fcl'?'FCL':'Pallets';
   const el=document.getElementById(sid);if(!el)return;
   el.querySelectorAll('circle.dlc').forEach(dot=>{
     dot.addEventListener('mouseenter',()=>{
       const i=+dot.dataset.i,w=wks[i];
       const up=(w[kP]+w[kA])>=w[kC];const ac=up?'#2E8B57':'#C0392B';
+      const addLine = w[kAdd]>0?`<div style="display:flex;gap:7px;margin-bottom:4px;"><span style="width:8px;height:8px;border-radius:3px;background:#2E8B57;flex-shrink:0;margin-top:2px;"></span><span style="flex:1;opacity:.85;">ADD</span><b style="font-family:'JetBrains Mono',monospace;">${f1(w[kAdd])} ${unitLbl}</b></div>`:'';
+      const expoLine = w[kExpo]>0?`<div style="display:flex;gap:7px;margin-bottom:4px;"><span style="width:8px;height:8px;border-radius:3px;background:#7A6FD0;flex-shrink:0;margin-top:2px;"></span><span style="flex:1;opacity:.85;">EXPO</span><b style="font-family:'JetBrains Mono',monospace;">${f1(w[kExpo])} ${unitLbl}</b></div>`:'';
+      const exaddLine = w[kExadd]>0?`<div style="display:flex;gap:7px;margin-bottom:4px;"><span style="width:8px;height:8px;border-radius:3px;background:#C77D1E;flex-shrink:0;margin-top:2px;"></span><span style="flex:1;opacity:.85;">EXADD</span><b style="font-family:'JetBrains Mono',monospace;">${f1(w[kExadd])} ${unitLbl}</b></div>`:'';
       ttEl.innerHTML=`<div style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;margin-bottom:7px;padding-bottom:5px;border-bottom:1px solid rgba(255,255,255,.15);">${w.label}</div>
         <div style="display:flex;gap:7px;margin-bottom:4px;"><span style="width:8px;height:8px;border-radius:50%;background:#2E8FB0;flex-shrink:0;margin-top:2px;"></span><span style="flex:1;opacity:.85;">Confirmado</span><b style="font-family:'JetBrains Mono',monospace;">${f1(w[kC])} ${unitLbl}</b></div>
         <div style="display:flex;gap:7px;margin-bottom:4px;"><span style="width:8px;height:8px;border-radius:50%;background:#E8A33D;flex-shrink:0;margin-top:2px;"></span><span style="flex:1;opacity:.85;">Proy. SOP+PRE</span><b style="font-family:'JetBrains Mono',monospace;">${f1(w[kP])} ${unitLbl}</b></div>
-        ${w[kA]>0?`<div style="display:flex;gap:7px;margin-bottom:4px;"><span style="width:8px;height:8px;border-radius:3px;background:${ac};flex-shrink:0;margin-top:2px;"></span><span style="flex:1;opacity:.85;">ADD+EXPO</span><b style="font-family:'JetBrains Mono',monospace;color:${ac};">${up?'▲':'▼'}${f1(w[kA])}</b></div>`:''}
+        ${addLine}${expoLine}${exaddLine}
+        ${w[kA]>0?`<div style="display:flex;gap:7px;margin-bottom:4px;"><span style="width:8px;height:8px;border-radius:3px;background:${ac};flex-shrink:0;margin-top:2px;"></span><span style="flex:1;opacity:.85;">Total ADD+EXADD</span><b style="font-family:'JetBrains Mono',monospace;color:${ac};">${up?'▲':'▼'}${f1(w[kA])}</b></div>`:''}
         <div style="border-top:1px solid rgba(255,255,255,.15);margin-top:6px;padding-top:5px;display:flex;justify-content:space-between;"><span style="opacity:.8">% Ejec.</span><b style="font-family:'JetBrains Mono',monospace;">${w[kP]>0?fp(w[kC]/w[kP]*100):'—'}</b></div>`;
       ttEl.style.opacity='1';
       const rect=el.getBoundingClientRect();
@@ -390,7 +396,7 @@ function bFcast(){
     <div id="fc-kg"></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;padding:10px 14px;background:#F0F7FB;border:1px solid #C8DDE8;border-radius:10px;font-size:11px;"><b style="color:var(--sky);">Lógica 6W:</b><span><b>SOP/PRE</b> = proyección base (línea naranja)</span><span style="background:#E5F3EA;border-radius:4px;padding:1px 6px;color:#2E8B57;font-weight:700;font-size:10px;">▲ ADD/EXPO</span>proyección ≥ ejec.<span style="background:#FBE5E1;border-radius:4px;padding:1px 6px;color:#C0392B;font-weight:700;font-size:10px;">▼ ADD/EXPO</span>proyección &lt; ejec.</div>
     <div class="card"><div class="ct">Curva global <span class="sub">hover para detalle</span></div><div id="fc-chart-wrap" style="position:relative;max-width:900px;margin:0 auto;"></div><div style="display:flex;gap:14px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line);flex-wrap:wrap;"><div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mu);"><svg width="22" height="4"><line x1="0" y1="2" x2="22" y2="2" stroke="#2E8FB0" stroke-width="2.5"/></svg>Confirmado</div><div style="display:flex;align-items:center;gap:6px;font-size:11px;color:var(--mu);"><svg width="22" height="4"><line x1="0" y1="2" x2="22" y2="2" stroke="#E8A33D" stroke-width="2" stroke-dasharray="5 2"/></svg>SOP+PRE</div></div></div>
-    <div class="card"><div class="ct">Desviación Confirmado vs SOP+PRE</div><div class="tbl-wrap"><table class="std"><thead><tr><th>Semana</th><th style="text-align:right">SOP+PRE</th><th style="text-align:right">Total c/ADD+EXPO</th><th style="text-align:right">Confirmado</th><th style="text-align:right">Desviación</th><th>% Ejecución</th></tr></thead><tbody id="fc-dev-body"></tbody></table></div></div>
+    <div class="card"><div class="ct">Desviación Confirmado vs SOP+PRE</div><div class="tbl-wrap"><table class="std"><thead><tr><th>Semana</th><th style="text-align:right">SOP+PRE</th><th style="text-align:right">ADD</th><th style="text-align:right">EXPO</th><th style="text-align:right">EXADD</th><th style="text-align:right">Total c/ADD+EXADD</th><th style="text-align:right">Confirmado</th><th style="text-align:right">Desviación</th><th>% Ejecución</th></tr></thead><tbody id="fc-dev-body"></tbody></table></div></div>
     <div class="sec-title">📊 Proyección vs Ejecución por Modo</div>
     <div class="g2">
       <div class="card"><div class="ct">✈ Aéreo</div><div id="fc-wrap-air" style="position:relative;"></div></div>
@@ -416,18 +422,19 @@ function renderForecast(){
   const wMar=FWKS_MODE['Marítimo'].filter(w=>selPPs.includes(w.wk));
   const wTer=FWKS_MODE['Terrestre'].filter(w=>selPPs.includes(w.wk));
   const kC=fcMetric==='fcl'?'fcl_conf':'pal_conf',kP=fcMetric==='fcl'?'fcl_proj':'pal_proj',kA=fcMetric==='fcl'?'fcl_addon':'pal_addon';
+  const kAdd=fcMetric==='fcl'?'fcl_add':'pal_add',kExpo=fcMetric==='fcl'?'fcl_expo':'pal_expo',kExadd=fcMetric==='fcl'?'fcl_exadd':'pal_exadd';
   const unit=fcMetric==='fcl'?'FCL':'Pallets';
   const totC=wks.reduce((a,w)=>a+w[kC],0),totP=wks.reduce((a,w)=>a+w[kP],0),totA=wks.reduce((a,w)=>a+w[kA],0);
-  document.getElementById('fc-kg').innerHTML=`<div class="kg"><div class="kc" style="--acc:#2E8FB0"><div class="kl">${unit} Confirmado</div><div class="kv">${f1(totC)}<span class="u">${unit}</span></div><div class="kf">${wks.length} semana(s)</div></div><div class="kc" style="--acc:#E8A33D"><div class="kl">Proy. SOP+PRE</div><div class="kv">${f1(totP)}<span class="u">${unit}</span></div></div><div class="kc" style="--acc:#2E8B57"><div class="kl">ADD+EXPO</div><div class="kv">${f1(totA)}<span class="u">${unit}</span></div><div class="kf">adicionales</div></div><div class="kc" style="--acc:#163B54"><div class="kl">Total proyectado</div><div class="kv">${f1(totP+totA)}<span class="u">${unit}</span></div></div></div>`;
+  const totAdd=wks.reduce((a,w)=>a+w[kAdd],0),totExpo=wks.reduce((a,w)=>a+w[kExpo],0),totExadd=wks.reduce((a,w)=>a+w[kExadd],0);
+  document.getElementById('fc-kg').innerHTML=`<div class="kg"><div class="kc" style="--acc:#2E8FB0"><div class="kl">${unit} Confirmado</div><div class="kv">${f1(totC)}<span class="u">${unit}</span></div><div class="kf">${wks.length} semana(s)</div></div><div class="kc" style="--acc:#E8A33D"><div class="kl">Proy. SOP+PRE</div><div class="kv">${f1(totP)}<span class="u">${unit}</span></div></div><div class="kc" style="--acc:#2E8B57"><div class="kl">ADD</div><div class="kv">${f1(totAdd)}<span class="u">${unit}</span></div><div class="kf">adicionales</div></div><div class="kc" style="--acc:#7A6FD0"><div class="kl">EXPO</div><div class="kv">${f1(totExpo)}<span class="u">${unit}</span></div><div class="kf">adicionales</div></div><div class="kc" style="--acc:#C77D1E"><div class="kl">EXADD</div><div class="kv">${f1(totExadd)}<span class="u">${unit}</span></div><div class="kf">adicionales</div></div><div class="kc" style="--acc:#163B54"><div class="kl">Total proyectado</div><div class="kv">${f1(totP+totA)}<span class="u">${unit}</span></div></div></div>`;
   const rows=wks.map(w=>{
     const hasC=w[kC]>0,ej=w[kP]>0?(w[kC]/w[kP]*100):0;
     const cl=hasC?(ej>=90?'ok':ej>=70?'warn':'bad'):'neu';
     const up=(w[kP]+w[kA])>=w[kC];
-    const ab=w[kA]>0?`<span class="addon ${up?'aup':'adn'}">${up?'▲':'▼'}${f1(w[kA])}</span>`:'';
     const dev=hasC?(w[kC]-w[kP]>=0?'+':'')+f1(w[kC]-w[kP]):'—';
-    return`<tr><td style="font-family:'JetBrains Mono',monospace;font-weight:600;">${w.label}</td><td class="num">${f1(w[kP])} ${ab}</td><td class="num">${f1(w[kP]+w[kA])}</td><td class="num" style="color:#2E8FB0;font-weight:600;">${hasC?f1(w[kC]):'—'}</td><td class="num" style="color:${hasC&&w[kC]<w[kP]?'var(--bad)':'var(--ok)'};font-weight:600;">${dev}</td><td><span class="pill ${cl}">${hasC?fp(ej):'Sin ejec.'}</span></td></tr>`;
+    return`<tr><td style="font-family:'JetBrains Mono',monospace;font-weight:600;">${w.label}</td><td class="num">${f1(w[kP])}</td><td class="num">${w[kAdd]>0?f1(w[kAdd]):'—'}</td><td class="num">${w[kExpo]>0?f1(w[kExpo]):'—'}</td><td class="num">${w[kExadd]>0?f1(w[kExadd]):'—'}</td><td class="num">${f1(w[kP]+w[kA])}${w[kA]>0?`<span class="addon ${up?'aup':'adn'}">${up?'▲':'▼'}${f1(w[kA])}</span>`:''}</td><td class="num" style="color:#2E8FB0;font-weight:600;">${hasC?f1(w[kC]):'—'}</td><td class="num" style="color:${hasC&&w[kC]<w[kP]?'var(--bad)':'var(--ok)'};font-weight:600;">${dev}</td><td><span class="pill ${cl}">${hasC?fp(ej):'Sin ejec.'}</span></td></tr>`;
   }).join('');
-  document.getElementById('fc-dev-body').innerHTML=rows||'<tr><td colspan="6" style="text-align:center;color:var(--mu);padding:16px;">Selecciona al menos un Pack Plan</td></tr>';
+  document.getElementById('fc-dev-body').innerHTML=rows||'<tr><td colspan="9" style="text-align:center;color:var(--mu);padding:16px;">Selecciona al menos un Pack Plan</td></tr>';
   document.getElementById('fc-stat').textContent=`${wks.length} de ${FWKS.length} semanas seleccionadas · métrica: ${unit}`;
   if(wks.length>1){
     document.getElementById('fc-chart-wrap').innerHTML=buildChart(wks,'fc-g',fcMetric);
@@ -1153,7 +1160,54 @@ function bRutas(){
   </section>`);
 }
 
-const BUILDERS = {forecast:bFcast, ports:bPorts, weekly:bWeekly, pmi:bPMI, air:bAir, execute:bExec, kpi:bKPI, rutas:bRutas};
+function bUpload(){
+  main.insertAdjacentHTML('beforeend',`<section class="panel" id="p-upload">
+    <div class="ph"><div class="ey">09 · Administración</div><div class="pt">Actualizar Datos</div><div class="ps">Sube el Excel más reciente para actualizar el dashboard directamente.</div></div>
+    <div class="card" style="max-width:560px;">
+      <div class="ct">Subir HORIZON_FORECAST_2627_V1.xlsm</div>
+      <label style="display:block;font-size:11px;font-weight:600;color:var(--mu);margin-bottom:4px;">Tu nombre (para el registro)</label>
+      <input type="text" id="upl-name" placeholder="Ej. André Arteaga" style="width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--line);font-size:12.5px;margin-bottom:14px;box-sizing:border-box;font-family:inherit;">
+      <label style="display:block;font-size:11px;font-weight:600;color:var(--mu);margin-bottom:4px;">Archivo Excel</label>
+      <input type="file" id="upl-file" accept=".xlsm,.xlsx" style="display:block;margin-bottom:14px;font-size:12px;">
+      <button type="button" class="btn-popup" id="upl-btn" style="font-size:12px;padding:9px 18px;font-weight:700;" onclick="doUpload()">⬆ Procesar y Publicar</button>
+      <div id="upl-status" style="margin-top:14px;font-size:12px;line-height:1.6;"></div>
+    </div>
+  </section>`);
+}
+
+const UPLOAD_API = 'https://athena-api-pxm7.onrender.com/publish';
+const UPLOAD_API_KEY = 'CAMBIA_ESTA_CLAVE_POR_TU_API_KEY_DE_RENDER';
+function doUpload(){
+  const nameEl=document.getElementById('upl-name');
+  const inp=document.getElementById('upl-file');
+  const statusEl=document.getElementById('upl-status');
+  const btn=document.getElementById('upl-btn');
+  const name=nameEl.value.trim();
+  if(!name){statusEl.innerHTML='<span style="color:var(--bad);">Escribe tu nombre antes de publicar.</span>';return;}
+  if(!inp.files.length){statusEl.innerHTML='<span style="color:var(--bad);">Selecciona un archivo primero.</span>';return;}
+  const file=inp.files[0];
+  btn.disabled=true;btn.textContent='⏳ Procesando… (puede tardar ~1 min)';
+  statusEl.innerHTML='<span style="color:var(--mu);">Subiendo y procesando el Excel, por favor espera…</span>';
+  const fd=new FormData();
+  fd.append('file',file);
+  fd.append('updater_name',name);
+  fetch(UPLOAD_API,{method:'POST',headers:{'X-API-Key':UPLOAD_API_KEY},body:fd})
+    .then(r=>r.json().then(data=>({ok:r.ok,data})))
+    .then(({ok,data})=>{
+      btn.disabled=false;btn.textContent='⬆ Procesar y Publicar';
+      if(!ok){
+        statusEl.innerHTML=`<span style="color:var(--bad);">❌ Error: ${data.error||'algo salió mal'}</span>`;
+        return;
+      }
+      statusEl.innerHTML=`<span style="color:var(--ok);">✅ Publicado por ${data.updated_by} (commit ${(data.commit_sha||'').slice(0,7)}). Refresca la página para ver los datos nuevos.</span>`;
+    })
+    .catch(err=>{
+      btn.disabled=false;btn.textContent='⬆ Procesar y Publicar';
+      statusEl.innerHTML=`<span style="color:var(--bad);">❌ Error de conexión: ${err.message}</span>`;
+    });
+}
+
+const BUILDERS = {forecast:bFcast, ports:bPorts, weekly:bWeekly, pmi:bPMI, air:bAir, execute:bExec, kpi:bKPI, rutas:bRutas, };
 VISIBLE_TABS.forEach(t => BUILDERS[t.id]());
 if (VISIBLE_TABS.length) sw(VISIBLE_TABS[0].id);
 
